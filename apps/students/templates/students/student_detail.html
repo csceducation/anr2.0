@@ -39,6 +39,7 @@
             <h4>{{ object.student_name }} </h4>
             <h4>{{ object.enrol_no }} </h4>
           </div>
+          
         </div>
         <h5><a href="{% url 'details_course' object.course.id%}">{{ object.course }}</a> </h5>
         <h5>{{ object.get_gender_display }} | {{ object.get_current_status_display }}</h5>
@@ -46,6 +47,22 @@
       </div>
       <div class="col-sm-8">
         <div>
+          <div class="form-group border-bottom row">
+            <label class="col">
+              Username
+            </label>
+            <div class="col">
+              {{ object.username }}
+            </div>
+          </div>
+          <div class="form-group border-bottom row">
+            <label class="col">
+              Password
+            </label>
+            <div class="col">
+              {{ object.password }}
+            </div>
+          </div>
           <div class="form-group border-bottom row">
             <label class="col">
               Date of Admission

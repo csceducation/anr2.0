@@ -150,6 +150,16 @@ class Enquiry(models.Model):
         age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
         return age
 
+    def formatted_date_of_birth(self):
+        # Get the date of birth
+        dob = self.date_of_birth
+
+        # Format the date as "ddmmyyyy"
+        formatted_date = dob.strftime('%d%m%Y')
+
+        return formatted_date
+
+        
 class Enquirylogs(models.Model):
     contact_choice = [("Phone","Phone"),("Whatsapp","Whatsapp"),("Email","Email")]
     student = models.ForeignKey(Enquiry,on_delete=models.PROTECT)

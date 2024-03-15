@@ -109,16 +109,24 @@ class Student(models.Model):
 
     def get_absolute_url(self):
         return reverse("student-detail", kwargs={"pk": self.pk})
+    
 
-    def save(self, *args, **kwargs):
-        if not self.user:
-            self.user = User.objects.create_user(username=self.username,password=self.password,is_staff=False)
-        super().save(*args, **kwargs)
+
+    def save(self, *args,from_save_update = True, **kwargs):
+        if from_save_update:
+            
+            if not self.user:
+                self.user = User.objects.create_user(username=self.username,password=self.password,is_staff=True)
+            super().save(*args, **kwargs)
+        elif from_save_update == False:
+            self.user.delete()
+            self.user = None
+            super().save(*args, **kwargs)
     
     
     def delete(self, *args, **kwargs):
         # Delete the associated user before deleting the Staff instance
-        self.user.delete()
+        self.save(from_save_update=False)
         super().delete(*args, **kwargs)
     
     

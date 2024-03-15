@@ -63,13 +63,20 @@ class Staff(models.Model):
         birthdate = self.date_of_birth
         age = today.year - birthdate.year - ((today.month, today.day) < (birthdate.month, birthdate.day))
         return age
-    def save(self, *args, **kwargs):
-        if not self.user:
-            self.user = User.objects.create_user(username=self.username,password=self.password,is_staff=True)
-        super().save(*args, **kwargs)
+    def save(self, *args,from_save_update = True, **kwargs):
+        if from_save_update:
+            
+            if not self.user:
+                self.user = User.objects.create_user(username=self.username,password=self.password,is_staff=True)
+                super().save(*args, **kwargs)
+        elif not from_save_update:
+            u = self.user
+            self.user = None
+            u.delete()
+            super().save(*args, **kwargs)
     
     
     def delete(self, *args, **kwargs):
         # Delete the associated user before deleting the Staff instance
-        self.user.delete()
+        self.save(from_save_update=False)
         super().delete(*args, **kwargs)
