@@ -116,7 +116,7 @@ class Student(models.Model):
         if from_save_update:
             
             if not self.user:
-                self.user = User.objects.create_user(username=self.username,password=self.password,is_staff=True)
+                self.user = User.objects.create_user(username=self.username,password=self.password,is_staff=False)
             super().save(*args, **kwargs)
         elif from_save_update == False:
             self.user.delete()
