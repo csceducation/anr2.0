@@ -154,6 +154,7 @@
         <th>Class time</th>
         <th>Faculty</th>
         <th>Remark</th>
+        <th>Delete</th>
       </tr>
     </thead>
     <tbody>
@@ -165,6 +166,9 @@
           <td>{{class.class_time.time}}</td>
           <td>{{class.faculty}}<td>
           {{class.remark}}
+          <td><a href="{% url 'class-delete' class.id%}"><input type="button" class="btn btn-sm btn-primary" value="Delete"></a></td>
+                
+            </tr>
         </tr>
       {% endfor %}
     </tbody>

@@ -315,7 +315,7 @@ main .timetable table:hover{box-shadow: none;}
 main table tbody td{
     height: 2.8rem;
     border-bottom: 1px solid var(--color-light);
-    color:chartreuse;
+    color:rgb(168, 237, 99);
 }
 main table tbody tr:last-child td{border: none;}
 
@@ -355,7 +355,7 @@ main .timetable.active .closeBtn{
     top: 5%;right: 5%;
 }
 p{
-  color:chartreuse !important;
+  color:white !important;
 }
 
 /* Right  */
@@ -696,8 +696,9 @@ p{
                         {% endfor %}
                     </tbody>
                 </table>
-                {% endif %}
+                
             </div>
+            {% endif %}
 <!------------------------------------------->
 
 
@@ -773,7 +774,6 @@ p{
 
 {% endif %}
 <!----------------------------------->
-{% if payments %}
             <div class="timetable" id="timetable">
                 <div>
                     <span id="prevDay">&lt;</span>
@@ -812,8 +812,6 @@ p{
                     </tbody>
                 </table>
             </div>
-   
-        {% endif %}
         </main>
 
         <!-- <div class="right">
