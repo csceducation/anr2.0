@@ -88,7 +88,7 @@ class Student(models.Model):
     #course
     date_of_admission = models.DateField(default=timezone.now)
     course = models.ForeignKey(CourseModel,on_delete=models.PROTECT)
-    class_time = models.ForeignKey(Time,verbose_name="Class Timing",on_delete=models.DO_NOTHING,blank=True)
+    class_time = models.ManyToManyField(Time,verbose_name="Class Timing",blank=True)
 
      
 

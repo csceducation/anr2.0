@@ -94,7 +94,11 @@
               Class Timinig
             </label>
             <div class="col">
-              {{ object.class_time.time }}
+              <ul style="margin-left: -30px;">
+              {% for time in object.class_time.all %}
+                  <li>{{ time.time }}</li>
+              {% endfor %}
+              </ul>
             </div>
           </div>
           <div class="form-group border-bottom row">

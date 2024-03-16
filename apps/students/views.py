@@ -214,8 +214,8 @@ class StudentCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         form.fields['if_enq'].label = ""
         enquiry_id = enquiry_id  # self.kwargs.get('if_enq')
         del form.fields["user"]
-        form.fields['username'].widget.attrs['readonly'] = True
-        form.fields['password'].widget.attrs['readonly'] = True
+        #form.fields['username'].widget.attrs['readonly'] = True
+        #form.fields['password'].widget.attrs['readonly'] = True
         if self.request.user.is_staff and not self.request.user.is_superuser:
             del form.fields["username"]
             del form.fields["password"]

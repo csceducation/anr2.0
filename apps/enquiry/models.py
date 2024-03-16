@@ -91,7 +91,7 @@ class Enquiry(models.Model):
     new_course = models.CharField(
         "Others", max_length=1024, default="",blank=True,null=True
     )
-    time_to_study = models.ForeignKey(Time,on_delete=models.CASCADE,blank=True,null=True)
+    time_to_study = models.ManyToManyField(Time,blank=True)
     
     def save(self, *args, **kwargs):
         if not self.pk:

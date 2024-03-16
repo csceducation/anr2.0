@@ -12,7 +12,7 @@ class Staff(models.Model):
     username = models.CharField(max_length=20,blank=False)
     password = models.CharField(max_length=20,blank=False)
     STATUS = [("active", "Active"), ("inactive", "Inactive")]
-    staff_roll = [("Administrative staff","Administrative staff"),("Acadamic Staff","Acadamic Staff")]
+    staff_roll = [("Administrative staff","Administrative staff"),("Acadamic Staff","Acadamic Staff"),('Acadamic & Administrator', 'Acadamic & Administrator'),('other', 'Other')]
     certificate_choice = [("Aadhar card","Aadhar card"),("Degree certificate","Degree certificate"),("Resume","Resume")]
     GENDER = [("male", "Male"), ("female", "Female")]
     RELIGION_CHOICE = [('Hindu','Hindu'),('Christian','Christian'),('Muslim','Muslim'),("others","others")]
