@@ -117,7 +117,7 @@ def generate_student_id_card(request,student_id):
     qr.make(fit=True)
     qr_image = qr.make_image(fill_color="black", back_color="white")
 
-    qr_path = os.path.join('media\\qrcodes', f'qr_code{student_id}.png')
+    qr_path = os.path.join('media/qrcodes', f'qr_code{student_id}.png')
     qr_image.save(qr_path)
 
     # Paste QR code onto the ID card
