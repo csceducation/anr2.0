@@ -77,7 +77,7 @@ class Student(models.Model):
 
 
     
-    passport = models.ImageField("Photo",blank=True, upload_to="students/passports/")
+    passport = models.ImageField("Photo",blank=False, upload_to="students/passports/")
     address = models.CharField("Address", max_length=255,default=None,blank=True)
     address1 = models.CharField("Address Line 2", max_length=255,default=None,blank=True,null=True)
     address2 = models.CharField("Address Line 3", max_length=255,default=None,blank=True,null=True)
