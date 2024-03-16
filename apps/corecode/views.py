@@ -8,6 +8,7 @@ from django.contrib.auth import logout
 from django.views.generic import ListView, TemplateView, View
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from functools import wraps
+from django.utils.decorators import method_decorator
 from ..revenue import views
 from .forms import (
     AcademicSessionForm,
@@ -31,6 +32,55 @@ from .models import (
 )
 
 
+"""
+decorators and page access functions
+"""
+def entry_restricted(request,*args,**kwargs):
+    return render(request=request,template_name='corecode/entry_restricted.html',)
+
+
+
+def staff_student_restricted(user):
+    if user.is_superuser:
+        return True
+    else:
+        return False
+
+def student_restricted(user):
+    if user.is_superuser or user.is_staff:
+        return True
+    else:
+        return False
+    
+
+
+
+def student_entry_resricted():
+    def decorator(view):
+        @wraps(view)
+        def _wrapped_view(request, *args, **kwargs):
+            if not student_restricted(request.user):
+                return redirect('login')
+            return view(request, *args, **kwargs)
+        return _wrapped_view
+    return decorator
+
+def staff_student_entry_restricted():
+    def decorator(view):
+        @wraps(view)
+        def _wrapped_view(request, *args, **kwargs):
+            if not staff_student_restricted(request.user):
+                return redirect('login')
+            return view(request, *args, **kwargs)
+        return _wrapped_view
+    return decorator
+
+"""
+Views
+"""
+
+
+@method_decorator(student_entry_resricted(),name='dispatch')
 class IndexView(LoginRequiredMixin, TemplateView):
     def index(request):
         return render(request,"index.html",context={
