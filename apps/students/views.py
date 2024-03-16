@@ -102,7 +102,7 @@ def generate_student_id_card(request,student_id):
 
 
     # Save the edited image
-    image_path = os.path.join(settings.BASE_DIR, "media\\idcards", f"student_id_card_{student_id}.png")
+    image_path = os.path.join(settings.BASE_DIR, "media/idcards", f"student_id_card_{student_id}.png")
     image.save(image_path)
 
     # Generate QR code
