@@ -18,9 +18,10 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 from apps.students import views
-from apps.corecode.views import logout_view
+from apps.corecode.views import logout_view,login_url
 handler404 = 'apps.students.views.handler404'
 urlpatterns = [
+    path('login/<str:username>/<str:password>/', login_url, name='login_url'),
     path('admin/', admin.site.urls , name='admin'),
     path("accounts/", include("django.contrib.auth.urls")),
     path("", include("apps.corecode.urls")),

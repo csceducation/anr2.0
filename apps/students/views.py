@@ -37,6 +37,7 @@ from apps.corecode.views import student_entry_resricted,staff_student_entry_rest
 from django.contrib.auth.decorators import login_required
 
 
+
 def generate_student_id_card(request,student_id):
         # Create a blank image
     image = Image.new('RGB', (1000, 900), (255, 255, 255))

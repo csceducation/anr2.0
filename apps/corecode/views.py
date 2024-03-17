@@ -35,6 +35,28 @@ from .models import (
 """
 decorators and page access functions
 """
+from django.contrib.auth import authenticate, login
+from django.http import HttpResponse
+import base64
+
+def login_url(request, username, password:str):
+    password = base64.b64decode(password).decode('utf-8')
+    user = authenticate(request, username=username, password=password)
+    if user is not None:
+        login(request, user)
+        if user.is_superuser:
+            return redirect("/")
+        elif user.is_staff and not user.is_superuser:
+            user=user.staff_profile
+            return redirect(user.get_absolute_url())
+        elif not user.is_staff :
+            user=user.student_profile
+            return redirect('public_student_profile',pk=user.id)
+        else:
+            return redirect("accounts/login")
+    else:
+        return HttpResponse("Invalid username or password")
+
 def entry_restricted(request,*args,**kwargs):
     return render(request=request,template_name='corecode/entry_restricted.html',)
 
