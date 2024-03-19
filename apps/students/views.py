@@ -207,9 +207,14 @@ class StudentCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
                     super().__init__(*args, **kwargs)
                     # Make the 'enquiry_id' field readonly
                     
+                    
+                                
 
 
         form = StudentForm()
+        for field_name, field in form.fields.items():
+                        if field.required:
+                            form.fields[field_name].label = f"{field.label} *"
         form.initial['if_enq'] = enquiry_id
         form.fields['if_enq'].widget = forms.HiddenInput()
         form.fields['if_enq'].label = ""

@@ -10,7 +10,7 @@
         width: 100%;
         height: 401px;
         color:blue;
-        paddind:3px 0 0 0;
+        padding:3px 0 0 0;
 
     }
     .student{
@@ -60,14 +60,14 @@
     .enquiry {
         color:red;
         font-size: 17px;
-        margin: 0 0 0 213px;
+        margin: 0 0 0 193px;
         font-weight: 900;
     }
   
     .enquirys {
         color: #0F52A8;
         font-size: 17px;
-        margin: 0 0 0 234px;
+        margin: 0 0 0 194px;
         font-weight: 900;
     }
 
@@ -80,7 +80,6 @@
 
     @media screen and (max-width: 600px) {
         .student {
-          background-color: lightblue;
           display:block;
         }
 
@@ -93,18 +92,19 @@
             margin: 23px 0 0 58px;
             border-radius: 15px;
             border: 5px solid #57616D;
+            padding: 10px;
         }
 
         .enquiry {
             color: red;
             font-size: 17px;
-            margin: 0 0 0 92px;
+            margin: 0 0 0 72px;
             font-weight: 900;
         }
         .enquirys {
             color: red;
             font-size: 17px;
-            margin: 0 0 0 92px;
+            margin: 0 0 0 72px;
             font-weight: 900;
         }
         .enquiryss {
@@ -120,7 +120,7 @@
             height: 123px;
             background-color: #fffefe;
             box-shadow: 0px 0px 8px 3px #0F52A8;
-            margin: 23px 0 0 58px;
+            margin: 123px 0 0 58px;
             border-radius: 15px;
             border: 5px solid #57616D;
         }
@@ -130,7 +130,7 @@
             height: 123px;
             background-color: #fffefe;
             box-shadow: 0px 0px 8px 3px #0F52A8;
-            margin: 23px 0 0 58px;
+            margin: 123px 0 0 58px;
             border-radius: 15px;
             border: 5px solid #57616D;
         }
@@ -150,7 +150,7 @@
             width: 100%;
             height: 727px;
             color:blue;
-            paddind:3px 0 0 0;
+            padding:3px 0 0 0;
     
         }
       
@@ -160,31 +160,16 @@
     
     <div class=" student">
         <div class="" >
-            <a href="{% url 'enquiry-index' %}">
-            <img class="firstimage"   src="https://cdn-icons-png.flaticon.com/512/7039/7039285.png"><br>
-             <a class="enquiry">Enquiry</a></a>
+            <a href="{% url 'pending-enquiry-list' %}">
+            <img class="firstimage"   src="https://cdn-icons-png.flaticon.com/512/3842/3842536.png"><br>
+             <a class="enquiry">Pending Enquirys</a></a>
         </div>
         
         <div> 
-            <a href="{% url 'select_enquiry' %}">    
-        <img class="secondimage"   src="https://cdn-icons-png.flaticon.com/512/8233/8233807.png">
+            <a href="{% url 'enquiry-list' %}">    
+        <img class="secondimage"   src="https://cdn-icons-png.flaticon.com/512/2666/2666436.png">
         <br>
-        <a class="enquirys">Admission</a></a>
-        </div>
-    </div>
-
-    <div class="student">
-        <div >
-            <a href="{% url 'student-list' %}">
-            <img class="firstimages"   src="https://cdn-icons-png.flaticon.com/512/8934/8934724.png"><br>
-             <a class="enquiryss">Student Details</a></a>
-        </div>
-        
-        <div>   
-            <a href="">  
-        <img class="secondimages"   src="https://cdn-icons-png.flaticon.com/512/13105/13105500.png">
-        <br>
-        <a class="enquirys">Attendance</a></a>
+        <a class="enquirys">Following Enquirys</a></a>
         </div>
     </div>
 

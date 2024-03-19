@@ -13,6 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from apps.enquiry.views import StudentEnquiryFormCreateView
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
@@ -35,6 +36,7 @@ urlpatterns = [
     path("course/", include("apps.course.urls")),
     path("batches/",include("apps.batch.urls")),
     path('logout/',logout_view, name='logout'),
+    path('enquiryform',StudentEnquiryFormCreateView.as_view(),name='enquiryform')
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 

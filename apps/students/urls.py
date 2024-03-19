@@ -20,6 +20,7 @@ from .views import (
     CreateCertificateLog,
     PublicView,
     generate_student_id_card,
+    
 )
 
 urlpatterns = [
