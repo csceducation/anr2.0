@@ -14,7 +14,7 @@ class LoginRequiredMiddleware:
 
     def __call__(self, request):
         # Exclude redirection for the public view URL pattern
-        excluded_url_pattern = 'enquiryform'
+        excluded_url_pattern = '/enquiryform'
 
         # Check if the user is not authenticated and the requested URL does not match the excluded pattern
         if not request.user.is_authenticated and not request.path.startswith(excluded_url_pattern):
