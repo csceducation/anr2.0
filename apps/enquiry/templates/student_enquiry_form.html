@@ -98,7 +98,7 @@
                   <div class="row">
                     <div class="col">
                         <div class="container mt-5">
-                            <form method="post" action="" class="needs-validation">
+                            <form method="post" action="" class="needs-validation" id="myform">
                               {% csrf_token %}
                               {% if form.errors %}
                               <div class="alert alert-danger">
@@ -238,7 +238,11 @@
         window.location = $(this).data("href");
       });
     })(jQuery)
-
+    document.getElementById('myform').addEventListener('input', function(e) {
+      if (e.target.tagName === 'INPUT' && e.target.type !== 'email') {
+          e.target.value = e.target.value.toUpperCase();
+      }
+  });
   </script>
 
   {% block morejs %}

@@ -10,7 +10,7 @@
 
 {% block content %}
 <div class="container mt-5">
-    <form method="post" action="" class="needs-validation">
+    <form method="post" action="" class="needs-validation" id="myform">
       {% csrf_token %}
       {% if form.errors %}
       <div class="alert alert-danger">
@@ -109,4 +109,11 @@
       </div>
     </form>
   </div>
+  <script>
+    document.getElementById('myform').addEventListener('input', function(e) {
+      if (e.target.tagName === 'INPUT' && e.target.type !== 'email') {
+          e.target.value = e.target.value.toUpperCase();
+      }
+  });
+  </script>
 {% endblock content %}
