@@ -43,16 +43,19 @@ class Enquiry(models.Model):
     enquiry_no = models.CharField("Enquiry Number", max_length=20, unique=True, editable=False)
     name = models.CharField("Name", max_length=255, blank=False, default="")
     f_name = models.CharField("Father Name", max_length=255, blank=False, default="")
-    address = models.CharField("Address", max_length=255,default=None,blank=True)
+    address = models.CharField("Address", max_length=255,default=None,blank=False)
     address1 = models.CharField("Address Line 2", max_length=255,default=None,blank=True,null=True)
     address2 = models.CharField("Address Line 3", max_length=255,default=None,blank=True,null=True)
     taluka = models.CharField("Taluk",max_length=255,null=True,default=None,blank=True)
-    district = models.CharField("District",max_length=255,default="",blank=True)
+    district = models.CharField("District",max_length=255,default="",blank=False)
     pincode = models.IntegerField("Pincode", blank=True, default=None,null=True)
     mobile_num_regex = RegexValidator(
         regex="^[0-9]{10,15}$", message="Entered mobile number isn't in a right format!"
     )
     mobile_number = models.CharField("Mobile Number",
+        validators=[mobile_num_regex], max_length=13, blank=True , null=True
+    )
+    alternate_mobile_number = models.CharField("Alternate Mobile Number",
         validators=[mobile_num_regex], max_length=13, blank=True , null=True
     )
     email = models.EmailField("Email", blank=True, default="" ,null=True)
@@ -208,16 +211,19 @@ class StudentEnquiryModel(models.Model):
         enquiry_no = models.CharField("Enquiry Number", max_length=20, unique=True, editable=False)
         name = models.CharField("Name", max_length=255, blank=False, default="")
         f_name = models.CharField("Father Name", max_length=255, blank=False, default="")
-        address = models.CharField("Address", max_length=255,default=None,blank=True)
+        address = models.CharField("Address", max_length=255,default=None,blank=False)
         address1 = models.CharField("Address Line 2", max_length=255,default=None,blank=True,null=True)
         address2 = models.CharField("Address Line 3", max_length=255,default=None,blank=True,null=True)
         taluka = models.CharField("Taluk",max_length=255,null=True,default=None,blank=True)
-        district = models.CharField("District",max_length=255,default="",blank=True)
+        district = models.CharField("District",max_length=255,default="",blank=False)
         pincode = models.IntegerField("Pincode", blank=True, default=None,null=True)
         mobile_num_regex = RegexValidator(
             regex="^[0-9]{10,15}$", message="Entered mobile number isn't in a right format!"
         )
         mobile_number = models.CharField("Mobile Number",
+            validators=[mobile_num_regex], max_length=13, blank=True , null=True
+        )
+        alternate_mobile_number = models.CharField("Alternate Mobile Number",
             validators=[mobile_num_regex], max_length=13, blank=True , null=True
         )
         email = models.EmailField("Email", blank=True, default="" ,null=True)
@@ -234,7 +240,7 @@ class StudentEnquiryModel(models.Model):
             "Qualification Status", max_length=50, choices=QUALIFICATION_STATUS_CHOICES, default="Completed"
         )
         studying_year = models.IntegerField("Current year",default=None,null=True,blank=True)
-        studying_course = models.TextField("Major", max_length=255, default="",blank=True)
+        studying_course = models.TextField("Major", max_length=255, default="",blank=True,null=True)
         student_college_name = models.CharField("School/College Name",max_length=1055,default="",blank=True,null=True)
 
         #others

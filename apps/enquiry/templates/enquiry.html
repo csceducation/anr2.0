@@ -24,7 +24,16 @@
       <tbody>
 
         {% for student in Enquiry %}
-          <tr class='clickable-row' data-href="{% url 'enquiry-detail' student.auto_increment %}">
+          <tr class='clickable-row'  data-href="{% url 'enquiry-detail' student.auto_increment %}" 
+          {% if student.enquiry_status == "Admitted" %}
+          style="color: green;background-color: rgb(155, 178, 178);"
+          {% elif  student.enquiry_status == "Rejected" %}
+          style="color: red;"
+          {% else %}
+          style="color:yellow;background-color: rgb(206, 152, 152);"
+          
+          {% endif %}
+          >
             <td>{{ student.enquiry_no}}</td>
             <td>{{ student.name}}</td>
             <td>{{ student.enquiry_status}}</td>

@@ -8,16 +8,18 @@
     <a href="{% url 'enquiry-update' object.auto_increment %}" class="btn btn-tool">
       <i class="fas fa-edit"></i>
     </a>
+    {% if object.enquiry_status != "Admitted" %}
     <a href="{% url 'enquiry-delete' object.auto_increment %}" class="btn btn-tool">
-      <i class="fas fa-times"></i>
+      <i class="fas fa-trash"></i>
     </a>
+    {% endif %}
   </div>
 </div>
 {% endblock content-header %}
 
 {% block content %}
     <div class="row mb-4">
-      <div class="col-sm-4">
+      <div class="col-sm-2">
         <div class="row mb-2">
 
           {% if object.passport %}
@@ -29,7 +31,13 @@
               src="{% static 'dist/img/avatar.png' %}"
               class="float-left rounded-circle mr-3" style="width: 120px; height: 120px;">
           {% endif %}
-          <h5>{{ object.enquiry_status }} </h5>
+          <h5 
+          {% if object.enquiry_status == "Admitted" %}
+          style="color: green;"
+          {% else %}
+          style="color: red;"
+          {% endif %}
+          >{{ object.enquiry_status }} </h5>
           
 
           <div class="float-right">
