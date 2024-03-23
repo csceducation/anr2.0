@@ -193,7 +193,7 @@ def delete_theory_attendance(request, *args, **kwargs):
     return redirect('theory_attendance',pk=batch_id)
 
 def daily_attendance_list(request):
-    attendances = DailyAttendance.objects.all()
+    attendances = DailyAttendance.objects.order_by('-date')
     return render(request, 'attendance_list.html', {'attendances': attendances})
 
 def daily_attendance_create(request):
@@ -231,7 +231,7 @@ def daily_attendance_delete(request, pk):
 
 
 def daily_staff_attendance_list(request):
-    attendances = StaffDailyAttendance.objects.all()
+    attendances = StaffDailyAttendance.objects.order_by('-date')
     return render(request, 'staff_list.html', {'attendances': attendances})
 
 def daily_staff_attendance_create(request):
