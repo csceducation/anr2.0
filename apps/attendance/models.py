@@ -106,7 +106,7 @@ class BatchTheoryAttendanceSummary:
             session_data = {}
 
             for sn in sessions:
-                attendances = BatchTheroyAttendance.objects.filter(batch=self.batch_model, date=date, session=sn)
+                attendances = BatchTheoryAttendance.objects.filter(batch=self.batch_model, date=date, session=sn)
                 session_attendance = []
                 
                 for attendance in attendances:

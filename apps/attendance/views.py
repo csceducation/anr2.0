@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect,get_object_or_404
-from .models import BatchLabAttendance,BatchTheoryAttendance,DailyAttendance,StaffDailyAttendance,BatchLabAttendanceSummary
+from .models import BatchLabAttendance,BatchTheoryAttendance,DailyAttendance,StaffDailyAttendance,BatchLabAttendanceSummary,BatchTheoryAttendanceSummary
 from apps.batch.models import BatchModel
 from apps.students.models import Student
 from datetime import datetime
