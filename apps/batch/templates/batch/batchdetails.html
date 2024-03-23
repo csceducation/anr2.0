@@ -4,6 +4,8 @@
 <div class="card-header">
   <div class="card-tools">
     <a href="{% url 'add_student' batch.id%}"><input type="button" class="btn btn-sm btn-primary" value="Add Student"></a>
+    <a href="{% url 'lab_attendance' batch.id%}"><input type="button" class="btn btn-sm btn-primary" value="Lab Attendance"></a>
+    <a href="{% url 'theory_attendance' batch.id%}"><input type="button" class="btn btn-sm btn-primary" value="Theory Attendance"></a>
     <a href="#" class="btn btn-tool">Print</a>
     <a href="{% url 'batch_update' batch.id%}" class="btn btn-tool">
       <i class="fas fa-edit"></i>
@@ -207,6 +209,8 @@
         </div>
     </div>
 </section>
+
+
 {% comment %} 
   <div class="container mt-5">
     <h2 class="mb-4">Batch Detail</h2>

@@ -2,7 +2,7 @@ from django.urls import path
 from .views import BatchListView,AddStudentView, BatchDetailView, BatchCreateView, BatchUpdateView, BatchDeleteView,delete_batchstudent_log
 
 urlpatterns = [
-    path('', BatchListView.slist, name='batch_list'),
+    path('', BatchListView, name='batch_list'),
     path('<int:pk>/', BatchDetailView.as_view(), name='batch_detail'),
     path('create/', BatchCreateView.as_view(), name='batch_create'),
     path('<int:pk>/update/', BatchUpdateView.as_view(), name='batch_update'),

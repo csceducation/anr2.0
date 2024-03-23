@@ -12,13 +12,22 @@ from apps.students.models import Classmodel
 from django.utils import timezone
 from apps.corecode.models import Time
 
-class BatchListView(ListView):
-    model = BatchModel
-    template_name = "batch/batchlist.html"
-    def slist(request):
-        template_name = "batch/batchlist.html"
-        return render(request, template_name , context={"batches":BatchModel.objects.all()})
+def BatchListView(request):
+    # Get the authenticated user
+    user = request.user
 
+    # Check if the user is an admin
+    if user.is_superuser:
+        # If user is admin, return all batches
+        batches = BatchModel.objects.all()
+    else:
+        # For regular staff users, filter batches where staff matches the user
+        batches = BatchModel.objects.filter(batch_staff=user.staff_profile)
+
+    template_name = "batch/batchlist.html"
+    context = {"batches": batches}
+    
+    return render(request, template_name, context)
 class BatchDetailView(DetailView):
     model = BatchModel
     template_name = "batch/batchdetails.html"

@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% now "Y-m-d" as current_date %}
+<div class="card-header">
+    <div class="card-title">
+        <h1>Lab Attendance Log</h1>
+    </div>
+    <div class="card-tools">
+        <a id="todayAttendanceBtn" href="#" class="btn btn-md btn-primary">Today's attendance</a>
+    </div>
+</div>
+
+{% if attendances|length == 0 %}
+<div class="mb-4">
+    <h2>No logs present</h2>
+</div>
+<div>
+    <h6>Add logs here:</h6>
+    <form id="addSessionForm" class="form-inline">
+        <div class="form-group">
+            <label for="sessionNumber" class="mr-2">Enter Session Number:</label>
+            <input type="text" id="sessionNumber" name="session" class="form-control mr-2" required>
+        </div>
+        <button type="submit" class="btn btn-md btn-primary">Add Session</button>
+    </form>
+</div>
+{% endif %}
+
+{% regroup attendances by batch as batch_attendances %}
+{% for batch_attendance in batch_attendances %}
+  {% regroup batch_attendance.list by date as date_attendances %}
+  {% for date_attendance in date_attendances %}
+    {% regroup date_attendance.list by session as session_attendances %}
+    {% for session_attendance in session_attendances %}
+      <div class="date-attendance-section my-4 p-3 rounded bg-light">
+        <h3 class="mb-3">Course : {{batch.batch_course.name}} | Date: {{ date_attendance.grouper }} | Session: {{ session_attendance.grouper }}</h3>
+        {% for attendance in session_attendance.list %}
+          <div class="d-flex justify-content-between align-items-center border rounded p-3 mb-3">
+            <div>
+              <p class="mb-1"><strong>Session:</strong> {{ attendance.session }}</p>
+              <p class="mb-0"><strong>Batch ID:</strong> {{ attendance.batch.batch_id }}</p>
+            </div>
+            {% if forloop.first %}
+            <div>
+              <a href="{% url 'lab_attendance_form' batch_id=attendance.batch.id date=date_attendance.grouper session=attendance.session %}" class="btn btn-primary btn-sm me-2">Manage</a>
+              <a href="{% url 'delete_lab_attendance' batch_id=attendance.batch.id date=date_attendance.grouper session=attendance.session %}" class="btn btn-danger btn-sm">Delete</a>
+            </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    {% endfor %}
+  {% endfor %}
+{% endfor %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Handle click event for "Today's attendance" button
+        document.getElementById('todayAttendanceBtn').addEventListener('click', function (event) {
+            event.preventDefault();
+            var session = prompt("Enter Session Number:");
+            if (session !== null) {
+                var url = "/attendance/lab_attendance_form/batch/{{ batch.id }}/date/{{ current_date }}/session/" + session + "/";
+                window.location.href = url;
+            }
+        });
+
+        // Handle form submission for "Add Session" form
+        document.getElementById('addSessionForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            var session = document.getElementById('sessionNumber').value;
+            var url = "/attendance/lab_attendance_form/batch/{{ batch.id }}/date/{{ current_date }}/session/" + session + "/";
+            window.location.href = url;
+        });
+    });
+</script>
+
+{% endblock content %}

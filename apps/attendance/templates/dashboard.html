@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    /* Custom styles to remove box effect and make cards flat */
+    .card {
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    .accordion-button {
+      background-color: #f8f9fa; /* Light background color */
+      border: none;
+    }
+
+    .accordion-button:hover {
+      background-color: #e9ecef; /* Lighter background color on hover */
+    }
+
+    .accordion-button:not(.collapsed) {
+      background-color: #e9ecef; /* Lighter background color when expanded */
+    }
+  </style>
+<div class="container">
+    <h1 class="mt-5 mb-4">Attendance Dashboard</h1>
+    <form method="get" class="form-inline">
+        <div class="form-group mr-3">
+            <label for="staff" class="mr-2">Staff:</label>
+            {{ form.staff }}
+        </div>
+        <div class="form-group mr-3">
+            <label for="date" class="mr-2">Date:</label>
+            {{ form.date }}
+        </div>
+        <div class="form-group mr-3">
+            <label class="mr-2">Choose Lab/Theory:</label>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="lab_attendance" id="present" value="lab">
+                <label class="form-check-label" for="present">Lab</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="lab_attendance" id="absent" value="theory">
+                <label class="form-check-label" for="absent">Theory</label>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+
+</div>
+
+<hr>
+
+
+<div class="container mt-5">
+    <h1>Attendance Data</h1>
+    <hr>
+    {% for course in attendance_data %}
+        {% for course_name, sessions in course.items %}
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="mb-0">
+                        {{ course_name }}
+                    </h3>
+                </div>
+                <div class="card-body">
+                    {% for session_number, students in sessions.items %}
+                        <div class="accordion" id="accordion{{ course_name }}">
+                            <div class="card">
+                                <div class="card-header" id="heading{{ course_name }}Session{{ session_number }}">
+                                    <h4 class="mb-0">
+                                        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse{{ course_name }}Session{{ session_number }}" aria-expanded="true" aria-controls="collapse{{ course_name }}Session{{ session_number }}">
+                                            Session {{ session_number }}
+                                        </button>
+                                    </h4>
+                                </div>
+                                <div id="collapse{{ course_name }}Session{{ session_number }}" class="collapse" aria-labelledby="heading{{ course_name }}Session{{ session_number }}" data-parent="#accordion{{ course_name }}">
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Student</th>
+                                                        <th>Entry Time</th>
+                                                        <th>Exit Time</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for student in students %}
+                                                        <tr>
+                                                            <td>{{ student.student.student_name }}</td>
+                                                            <td>{{ student.entry }}</td>
+                                                            <td>{{ student.exit }}</td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+    {% endfor %}
+</div>
+
+
+{% endblock content%}
