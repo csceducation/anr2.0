@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Daily Attendance</title>
+</head>
+<body>
+    <h1>Daily Attendance for students</h1>
+    
+    <h2>Date: {{ date }}</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        
+        {% for student in students_data %}
+        <h3>student: {{ student.name }}</h3>
+        <label for="entry_time_{{ student.student_id }}">Entry Time:</label>
+        <input type="time" id="entry_time_{{ student.student_id }}" name="entry_time_{{ student.student_id }}" value="{{ student.entry_time }}">
+        <br>
+        <label for="exit_time_{{ student.id }}">Exit Time:</label>
+        <input type="time" id="exit_time_{{ student.student_id }}" name="exit_time_{{ student.student_id }}" value="{{ student.exit_time }}">
+        <br><br>
+        {% endfor %}
+        
+        <input type="submit" value="Update Attendance">
+    </form>
+
+    <h2>Previous Attendance Data:</h2>
+    <ul>
+        {% for student in students_data %}
+            <li>student ID: {{ student.student_id }}</li>
+            <ul>
+                <li>Entry Time: {{ student.entry_time }}</li>
+                <li>Exit Time: {{ student.exit_time }}</li>
+            </ul>
+        {% endfor %}
+    </ul>
+</body>
+</html>
