@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "apps.enquiry",
     "apps.course",
     "apps.batch",
+    'apps.attendance',
     
 ]
 

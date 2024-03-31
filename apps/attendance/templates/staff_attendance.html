@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Daily Attendance</title>
+</head>
+<body>
+    <h1>Daily Attendance for staffs</h1>
+    
+    <h2>Date: {{ date }}</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        
+        {% for staff in staffs_data %}
+        <h3>staff: {{ staff.name }}</h3>
+        <label for="entry_time_{{ staff.staff_id }}">Entry Time:</label>
+        <input type="time" id="entry_time_{{ staff.staff_id }}" name="entry_time_{{ staff.staff_id }}" value="{{ staff.entry_time }}">
+        <br>
+        <label for="exit_time_{{ staff.staff_id }}">Exit Time:</label>
+        <input type="time" id="exit_time_{{ staff.staff_id }}" name="exit_time_{{ staff.staff_id }}" value="{{ staff.exit_time }}">
+        <br><br>
+        {% endfor %}
+        
+        <input type="submit" value="Update Attendance">
+    </form>
+
+    <h2>Previous Attendance Data:</h2>
+    <ul>
+        {% for staff in staffs_data %}
+            <li>Staff ID: {{ staff.staff_id }}</li>
+            <ul>
+                <li>Entry Time: {{ staff.entry_time }}</li>
+                <li>Exit Time: {{ staff.exit_time }}</li>
+            </ul>
+        {% endfor %}
+    </ul>
+</body>
+</html>
