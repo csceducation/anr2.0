@@ -1,39 +1,62 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Update Theory Attendance</title>
-</head>
-<body>
-    <h1>Update Theory Attendance for Batch {{ batch.batch_id }}</h1>
+{% extends 'base.html' %}
+
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-9">
+            <h1 class="d-inline">Batch Theory Attendance</h1>
+        </div>
+        <div class="col-3 text-end">
+            <a href="{% url 'router' %}" class="btn btn-info shadow-sm">Return to Dashboard</a>
+        </div>
+    </div>
+</div>
+<form method="post">
+    {% csrf_token %}
     
-    <h2>Date: {{ date }}</h2>
-
-    <form method="post">
-        {% csrf_token %}
-        
+    <div class="row">
         {% for student in students_data %}
-        <h3>Student: {{ student.name }}</h3>
-        <label for="entry_time_{{ student.student_id }}">Entry Time:</label>
-        <input type="time" id="entry_time_{{ student.student_id }}" name="entry_time_{{ student.student_id }}" value="{{ student.entry_time }}">
-        <br>
-        <label for="exit_time_{{ student.student_id }}">Exit Time:</label>
-        <input type="time" id="exit_time_{{ student.student_id }}" name="exit_time_{{ student.student_id }}" value="{{ student.exit_time }}">
-        <br><br>
+        <div class="col-md-6">
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h3>Student: {{ student.name }}</h3>
+                    <div class="mb-3">
+                        <label for="entry_time_{{ student.student_id }}" class="form-label">Entry Time:</label>
+                        <input type="time" id="entry_time_{{ student.student_id }}" name="entry_time_{{ student.student_id }}" value="{{ student.entry_time }}" class="form-control" style="max-width: 200px;">
+                    </div>
+                    <div class="mb-3">
+                        <label for="exit_time_{{ student.student_id }}" class="form-label">Exit Time:</label>
+                        <input type="time" id="exit_time_{{ student.student_id }}" name="exit_time_{{ student.student_id }}" value="{{ student.exit_time }}" class="form-control" style="max-width: 200px;">
+                    </div>
+                </div>
+            </div>
+        </div>
         {% endfor %}
-        
-        <input type="submit" value="Update Attendance">
-    </form>
+    </div>
+    
+    <button type="submit" class="btn btn-info mt-3">Update Attendance</button>
+</form>
 
-    <h2>Previous Attendance Data:</h2>
-    <ul>
+<h2 class="mt-5">Previous Attendance Data:</h2>
+<table class="table table-bordered mt-3">
+    <thead class="thead-light">
+        <tr>
+            <th>Student Name</th>
+            <th>Entry Time</th>
+            <th>Exit Time</th>
+        </tr>
+    </thead>
+    <tbody>
         {% for student in students_data %}
-            <li>Student ID: {{ student.student_id }}</li>
-            <ul>
-                <li>Entry Time: {{ student.entry_time }}</li>
-                <li>Exit Time: {{ student.exit_time }}</li>
-            </ul>
+        <tr>
+            <td>{{ student.name }}</td>
+            <td>{{ student.entry_time }}</td>
+            <td>{{ student.exit_time}}</td>
+        </tr>
         {% endfor %}
-    </ul>
-</body>
-</html>
+    </tbody>
+</table>
+</div>
+
+{% endblock content %}

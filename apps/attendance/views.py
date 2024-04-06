@@ -1,10 +1,15 @@
 from django.shortcuts import render, redirect, get_object_or_404,reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect,JsonResponse
 from apps.batch.models import BatchModel
 from .forms import DateForm
 from .attendance_manager import AttendanceManager,DailyAttendanceManager  # Import your AttendanceManager
 from apps.staffs.models import Staff
 from apps.students.models import Student
+from .dashboard import DashboardManager
+import random,json
+from datetime import datetime,timedelta
+import plotly.express as px
+
 
 connection_string = "mongodb://localhost:27017/"
 db = "anr_attendance"
@@ -206,7 +211,7 @@ def student_attendance(request):
     for student in student_queryset:
         students_data.append({
             'student_id': student.id,
-            'name': student.username,
+            'name': student.student_name,
             'entry_time': existing_data.get(str(student.id), {}).get("entry_time", ""),
             'exit_time': existing_data.get(str(student.id), {}).get("exit_time", "")
         })
@@ -217,3 +222,97 @@ def student_attendance(request):
     }
 
     return render(request, 'student_attendance.html', context)
+
+
+def router(request):
+    return render(request,'router.html')
+
+def day_dashboard(request, *args):
+    selected_week = request.GET.get('week')
+    date = request.GET.get('date')
+
+    if selected_week:
+        year, week_num = map(int, selected_week.split('-W'))
+        first_day_of_week = datetime.strptime(f'{year}-W{week_num}-1', "%Y-W%W-%w")
+    else:
+        # If 'week' parameter is not provided, use the current week
+        today = datetime.now()
+        year, week_num, _ = today.isocalendar()
+        first_day_of_week = today - timedelta(days=today.weekday())  # Start of the current week
+
+    dates = []
+    for i in range(7):
+        day = first_day_of_week + timedelta(days=i)
+        if day.weekday() != 6:
+            dates.append(day.strftime('%Y-%m-%d'))  # Format date as 'yy-mm-dd'
+
+    if date is None:
+        date = dates[0]
+
+    manager = DashboardManager(db)
+    staff_strength, staff_presentees = manager.get_staff_attendance(dates)
+    student_strength, students_presentees = manager.get_student_attendance(dates)
+
+    students_data = manager.get_student_table(date)
+    staffs_data = manager.get_staff_table(date)
+
+    
+    staff_trace1 = {
+        'x': dates,
+        'y': [item[1] for item in staff_presentees],
+        'name': 'Staff Presentees',
+        'type': 'bar'
+    }
+    staff_trace2 = {
+        'x': dates,
+        'y': [staff_strength for _ in range(len(dates))],
+        'name': 'Staff Strength',
+        'type': 'bar'
+    }
+    staff_data = [staff_trace1, staff_trace2]
+    staff_layout = {
+        'title': 'Staff Attendance',
+        'barmode': 'group'
+    }
+    staff_fig = {
+        'data': staff_data,
+        'layout': staff_layout
+    }
+
+    # Create the bar chart for students
+    student_trace1 = {
+        'x': dates,
+        'y': [item[1] for item in students_presentees],
+        'name': 'Student Presentees',
+        'type': 'bar'
+    }
+    student_trace2 = {
+        'x': dates,
+        'y': [student_strength for _ in range(len(dates))],
+        'name': 'Student Strength',
+        'type': 'bar'
+    }
+    student_data = [student_trace1, student_trace2]
+    student_layout = {
+        'title': 'Student Attendance',
+        'barmode': 'group'
+    }
+    student_fig = {
+        'data': student_data,
+        'layout': student_layout
+    }
+    staff_graphJSON = json.dumps(staff_fig)
+    student_graphJSON = json.dumps(student_fig)
+    context = {
+        'students_data': students_data,
+        'staffs_data': staffs_data,
+        'week_dates': dates,
+        'staff_graphJSON': staff_graphJSON,
+        'student_graphJSON': student_graphJSON,
+
+    }
+    return render(request, 'day_dashboard.html', context)
+    
+
+def batch_dashboard(request):
+    return JsonResponse('hello',safe=False,status=200)
