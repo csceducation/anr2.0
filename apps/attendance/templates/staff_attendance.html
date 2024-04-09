@@ -15,30 +15,32 @@
         
         <form method="post">
             {% csrf_token %}
-            
-            <div class="row">
-                {% for staff in staffs_data %}
-                <div class="col-md-6">
-                    <div class="card mt-4">
-                        <div class="card-body">
-                            <h3>Staff: {{ staff.name }}</h3>
-                            <div class="mb-3">
-                                <label for="entry_time_{{ staff.staff_id }}" class="form-label">Entry Time:</label>
-                                <input type="time" id="entry_time_{{ staff.staff_id }}" name="entry_time_{{ staff.staff_id }}" value="{{ staff.entry_time }}" class="form-control" style="max-width: 200px;">
-                            </div>
-                            <div class="mb-3">
-                                <label for="exit_time_{{ staff.staff_id }}" class="form-label">Exit Time:</label>
-                                <input type="time" id="exit_time_{{ staff.staff_id }}" name="exit_time_{{ staff.staff_id }}" value="{{ staff.exit_time }}" class="form-control" style="max-width: 200px;">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-            
+            <table class="table table-bordered mt-3">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Staff Name</th>
+                        <th>Entry Time</th>
+                        <th>Exit Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for staff in staffs_data %}
+                    <tr>
+                        <td>{{ staff.name }}</td>
+                        <td>
+                            <input type="time" id="entry_time_{{ staff.staff_id }}" name="entry_time_{{ staff.staff_id }}" value="{% if staff.entry_time %}{{ staff.entry_time }}{% elif request.GET.entry_time %}{{ request.GET.entry_time }}{% endif %}" class="form-control" style="max-width: 200px;">
+                        </td>
+                        <td>
+                            <input type="time" id="exit_time_{{ staff.staff_id }}" name="exit_time_{{ staff.staff_id }}" value="{% if staff.exit_time %}{{ staff.exit_time }}{% elif request.GET.exit_time %}{{ request.GET.exit_time }}{% endif %}" class="form-control" style="max-width: 200px;">
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
             <button type="submit" class="btn btn-info mt-3">Update Attendance</button>
         </form>
-
+        
+        
         <h2 class="mt-5">Previous Attendance Data:</h2>
         <table class="table table-bordered mt-3">
             <thead class = "thead-light">
@@ -52,8 +54,20 @@
                 {% for staff in staffs_data %}
                 <tr>
                     <td>{{ staff.name }}</td>
-                    <td>{{ staff.entry_time}}</td>
-                    <td>{{ staff.exit_time }}</td>
+                    <td>
+                        {% if staff.entry_time %}
+                            {{ staff.entry_time }}
+                        {% else %}
+                            Absent
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if staff.exit_time %}
+                            {{ staff.exit_time }}
+                        {% else %}
+                            Absent
+                        {% endif %}
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>

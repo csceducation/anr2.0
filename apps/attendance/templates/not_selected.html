@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Please select a staff from the list</h2>
+    <div class="form-group">
+        <select class="form-control" name="staff" id="staff_input" style="width: 30%;">
+            {% for staff in staffs %}
+                <option value="{{ staff.id }}">{{ staff.username }}</option>
+            {% endfor %}
+        </select>
+        
+    </div>
+    <button class="btn btn-info" onclick="redirect()">Select</button>
+</div>
+
+<script>
+    function redirect() {
+        var x = document.getElementById('staff_input');
+        var selectedValue = x.value;
+        if (selectedValue) {
+            location.replace('/attendance/batch_dashboard?staff_id=' + selectedValue);
+        }
+    }
+</script>
+
+{% endblock content %}

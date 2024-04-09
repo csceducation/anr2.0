@@ -31,6 +31,8 @@ def lab_attendance(request, batch_id):
             form = DateForm(request.POST)
             if form.is_valid():
                 date = form.cleaned_data['date']
+                #entry_time = form.cleaned_data['entry_time']
+                #exit_time = form.cleaned_data['exit_time']
                 return HttpResponseRedirect(request.path + f"?date={date}")
         else:
             form = DateForm()
@@ -84,6 +86,8 @@ def theory_attendance(request, batch_id):
             form = DateForm(request.POST)
             if form.is_valid():
                 date = form.cleaned_data['date']
+                #entry_time = form.cleaned_data['entry_time']
+                #exit_time = form.cleaned_data['exit_time']
                 return HttpResponseRedirect(request.path + f"?date={date}")
         else:
             form = DateForm()
@@ -314,5 +318,70 @@ def day_dashboard(request, *args):
     return render(request, 'day_dashboard.html', context)
     
 
-def batch_dashboard(request):
-    return JsonResponse('hello',safe=False,status=200)
+def batch_dashboard(request, *args,**kwargs):
+    selected_week = request.GET.get('week',None)
+    date = request.GET.get('date',None)
+    staff_id = request.GET.get('staff_id',None)
+    if staff_id == None:
+        staffs = Staff.objects.all()
+        return render(request,'not_selected.html',{'staffs':staffs})
+    staff = Staff.objects.get(id=staff_id)
+    batches = BatchModel.objects.filter(batch_staff=staff)
+    if selected_week:
+        year, week_num = map(int, selected_week.split('-W'))
+        first_day_of_week = datetime.strptime(f'{year}-W{week_num}-1', "%Y-W%W-%w")
+    else:
+        # If 'week' parameter is not provided, use the current week
+        today = datetime.now()
+        year, week_num, _ = today.isocalendar()
+        first_day_of_week = today - timedelta(days=today.weekday())  # Start of the current week
+
+    dates = []
+    for i in range(7):
+        day = first_day_of_week + timedelta(days=i)
+        if day.weekday() != 6:
+            dates.append(day.strftime('%Y-%m-%d'))  # Format date as 'yy-mm-dd'
+    manager = DashboardManager(db)
+    graphs = []
+    presentees =[]
+    for batch in batches:
+        data,strength = manager.get_batch_dashboard(dates,batch)
+        presentees.append({batch.batch_id:data})
+        student_trace1 = {
+            'x': dates,
+            'y': [item[1] for item in data],
+            'name': 'Student Presentees - Lab',
+            'type': 'bar'
+        }
+        student_trace2 = {
+            'x': dates,
+            'y': [item[2] for item in data],
+            'name': 'Student Presentees - Theory',
+            'type': 'bar'
+        }
+        student_trace3 = {
+            'x': dates,
+            'y': [strength for _ in range(len(dates))],
+            'name': 'Student Strength',
+            'type': 'bar'
+        }
+        
+        student_data = [student_trace1, student_trace2, student_trace3]
+        student_layout = {
+            'title': f'Student Attendance for batch : {batch.batch_id} batch subject : {batch.batch_course}' ,
+            'barmode': 'group'
+        }
+        student_fig = {
+            'data': student_data,
+            'layout': student_layout
+        }
+        student_graphJSON = json.dumps(student_fig)
+        graphs.append(student_graphJSON)
+        #print(data)
+    batch_id = request.GET.get('batch_id',None)
+    if batch_id ==  None:
+        return render(request,"dashboard_try.html",{"graphs":graphs,"week_dates":dates,'batches':batches})
+    table = manager.get_batch_attendance(date,int(batch_id))
+    batch = BatchModel.objects.get(id=batch_id)
+    return render(request,"batch_dashboard.html",{"graphs":graphs,"week_dates":dates,"table":table,'batches':batches,'batch':batch,'date':date})
+    #return JsonResponse(graphs,safe=False,status=200)

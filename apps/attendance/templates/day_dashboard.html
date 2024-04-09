@@ -48,45 +48,48 @@
         <h2>Student Attendance</h2>
         <div id="studentChart" style="height: 40%;width: 80%;"></div>
     </div>
+    <!-- Students Attendances -->
     <h2 class="mt-5">Students Attendances:</h2>
-        <table class="table table-bordered mt-3">
-            <thead class="thead-light">
-                <tr>
-                    <th>Student Name</th>
-                    <th>Entry Time</th>
-                    <th>Exit Time</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for student in students_data %}
-                <tr>
-                    <td>{{ student.name }}</td>
-                    <td>{{ student.entry_time }}</td>
-                    <td>{{ student.exit_time }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <table class="table table-bordered mt-3">
+        <thead class="thead-light">
+            <tr>
+                <th>Student Name</th>
+                <th>Entry Time</th>
+                <th>Exit Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students_data %}
+            <tr>
+                <td>{{ student.name }}</td>
+                <td>{% if student.entry_time %}{{ student.entry_time }}{% else %}Absent{% endif %}</td>
+                <td>{% if student.exit_time %}{{ student.exit_time }}{% else %}Absent{% endif %}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
-        <h2 class="mt-5">Staffs Attendance:</h2>
-        <table class="table table-bordered mt-3">
-            <thead class = "thead-light">
-                <tr>
-                    <th>Staff Name</th>
-                    <th>Entry Time</th>
-                    <th>Exit Time</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for staff in staffs_data %}
-                <tr>
-                    <td>{{ staff.name }}</td>
-                    <td>{{ staff.entry_time}}</td>
-                    <td>{{ staff.exit_time }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <!-- Staffs Attendance -->
+    <h2 class="mt-5">Staffs Attendance:</h2>
+    <table class="table table-bordered mt-3">
+        <thead class="thead-light">
+            <tr>
+                <th>Staff Name</th>
+                <th>Entry Time</th>
+                <th>Exit Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for staff in staffs_data %}
+            <tr>
+                <td>{{ staff.name }}</td>
+                <td>{% if staff.entry_time %}{{ staff.entry_time }}{% else %}Absent{% endif %}</td>
+                <td>{% if staff.exit_time %}{{ staff.exit_time }}{% else %}Absent{% endif %}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
 <!-- JavaScript to render the charts -->
 <script>
     var staffGraphJSON = {{ staff_graphJSON|safe }};

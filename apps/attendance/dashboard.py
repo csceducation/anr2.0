@@ -1,6 +1,7 @@
 import pymongo
 from apps.staffs.models import Staff
 from apps.students.models import Student
+from apps.batch.models import BatchModel
 
 class DashboardManager:
     def __init__(self, mongodb_database):
@@ -8,6 +9,8 @@ class DashboardManager:
         self.db = self.client[mongodb_database]
         self.staff_collection = self.db["staff_collection"]
         self.student_collection = self.db["student_collection"]
+        self.lab_collection = self.db['lab_collection']
+        self.theory_collection = self.db['theory_collection']
 
     def __del__(self):
         self.client.close()
@@ -17,28 +20,38 @@ class DashboardManager:
         presentees = []
 
         for date in week_dates:
-            staff_attendance = self.staff_collection.find_one({'date': date})
+            staff_attendance = self.staff_collection.find_one({
+                'date': date,
+                'attendance': {'$exists': True, '$ne': {}}
+            })
             if staff_attendance:
-                attendance_count = len(staff_attendance.get('attendance', {}))
+                present_staff = {k: v for k, v in staff_attendance.get('attendance', {}).items() if v.get('entry_time') and v.get('exit_time')}
+                attendance_count = len(present_staff)
                 presentees.append((date, attendance_count))
             else:
                 presentees.append((date, 0))
 
         return staff_strength, presentees
 
+
     def get_student_attendance(self, week_dates):
         student_strength = Student.objects.count()
         presentees = []
 
         for date in week_dates:
-            student_attendance = self.student_collection.find_one({'date': date})
+            student_attendance = self.student_collection.find_one({
+                'date': date,
+                'attendance': {'$exists': True, '$ne': {}}
+            })
             if student_attendance:
-                attendance_count = len(student_attendance.get('attendance', {}))
+                present_students = {k: v for k, v in student_attendance.get('attendance', {}).items() if v.get('entry_time') and v.get('exit_time')}
+                attendance_count = len(present_students)
                 presentees.append((date, attendance_count))
             else:
                 presentees.append((date, 0))
 
         return student_strength, presentees
+
 
     def get_student_table(self, date):
         document = self.student_collection.find_one({"date": date})
@@ -80,35 +93,95 @@ class DashboardManager:
         else:
             return []
 
-# Test the DashboardManager
-if __name__ == "__main__":
-    # Initialize the DashboardManager with your MongoDB database name
-    manager = DashboardManager("your_database_name")
 
-    # Test getting staff attendance
-    week_dates = ["2024-04-06", "2024-04-07", "2024-04-08"]
-    staff_strength, staff_attendance = manager.get_staff_attendance(week_dates)
-    print("Staff Strength:", staff_strength)
-    print("Staff Attendance:")
-    for date, count in staff_attendance:
-        print(date, "-", count)
+    def get_batch_dashboard(self, dates, batch):
+        batch_id = batch.id
 
-    # Test getting student attendance
-    student_strength, student_attendance = manager.get_student_attendance(week_dates)
-    print("\nStudent Strength:", student_strength)
-    print("Student Attendance:")
-    for date, count in student_attendance:
-        print(date, "-", count)
+        # Get all lab documents for the given batch_id and dates
+        lab_documents = self.lab_collection.find({
+            'batch_id': batch_id,
+            'date': {'$in': dates},
+            'students': {'$exists': True, '$ne': {}}
+        })
 
-    # Test getting student table for a date
-    date = "2024-04-06"
-    student_table = manager.get_student_table(date)
-    print("\nStudent Table for", date)
-    for student in student_table:
-        print(student)
+        # Get all theory documents for the given batch_id and dates
+        theory_documents = self.theory_collection.find({
+            'batch_id': batch_id,
+            'date': {'$in': dates},
+            'students': {'$exists': True, '$ne': {}}
+        })
 
-    # Test getting staff table for a date
-    staff_table = manager.get_staff_table(date)
-    print("\nStaff Table for", date)
-    for staff in staff_table:
-        print(staff)
+        # Create dictionaries to store presentees for each date for lab and theory
+        lab_presentees = {date: 0 for date in dates}
+        theory_presentees = {date: 0 for date in dates}
+
+        # Calculate lab presentees
+        for lab_doc in lab_documents:
+            date = lab_doc['date']
+            students = lab_doc.get('students', {})
+            present_students = {k: v for k, v in students.items() if v.get('entry_time') and v.get('exit_time')}
+            lab_presentees[date] += len(present_students)
+
+        # Calculate theory presentees
+        for theory_doc in theory_documents:
+            date = theory_doc['date']
+            students = theory_doc.get('students', {})
+            present_students = {k: v for k, v in students.items() if v.get('entry_time') and v.get('exit_time')}
+            theory_presentees[date] += len(present_students)
+
+        # Combine the presentees for lab and theory into a single list of tuples
+        data = [
+            (date, lab_presentees[date], theory_presentees[date])
+            for date in dates
+        ]
+
+        # Get the batch strength (total number of students in the batch)
+        batch_strength = batch.batch_students.all().count()
+
+        return data, batch_strength
+
+    def get_batch_attendance(self, date, batch_id):
+        lab_document = self.lab_collection.find_one({"date": date, 'batch_id': batch_id})
+        theory_document = self.theory_collection.find_one({"date": date, 'batch_id': batch_id})
+
+        students_data = []
+
+        # Logic for Lab Collection
+        if lab_document:
+            lab_data = lab_document.get("students", {})
+            for student_id, attendance_data in lab_data.items():
+                student = Student.objects.filter(id=int(student_id)).first()
+                if student:
+                    student_info = {
+                        'student_id': student.enrol_no,
+                        'name': student.student_name,
+                        'lab_entry_time': attendance_data.get("entry_time", ""),
+                        'lab_exit_time': attendance_data.get("exit_time", ""),
+                        'theory_entry_time': "",
+                        'theory_exit_time': ""
+                    }
+                    students_data.append(student_info)
+
+        # Logic for Theory Collection
+        if theory_document:
+            theory_data = theory_document.get("students", {})
+            for student_id, student_info in theory_data.items():
+                student = Student.objects.filter(id=int(student_id)).first()
+                if student:
+                    existing_student = next((s for s in students_data if s['student_id'] == student.enrol_no), None)
+                    if existing_student:
+                        existing_student['theory_entry_time'] = student_info.get("entry_time", "")
+                        existing_student['theory_exit_time'] = student_info.get("exit_time", "")
+                    else:
+                        student_info = {
+                            'student_id': student.enrol_no,
+                            'name': student.student_name,
+                            'lab_entry_time': "",
+                            'lab_exit_time': "",
+                            'theory_entry_time': student_info.get("entry_time", ""),
+                            'theory_exit_time': student_info.get("exit_time", "")
+                        }
+                        students_data.append(student_info)
+
+        return students_data
+

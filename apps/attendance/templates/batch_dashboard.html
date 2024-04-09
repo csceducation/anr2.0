@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+
+{% block scriptORstyle %}
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+{% endblock scriptORstyle %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Select a Batch, Week, and Date</h1>
+    <!-- Batch, Week, and Date Selection Filter Bar -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <!-- Batch Selection Form -->
+        <form id="batchForm" method="get" class="form-inline">
+            <div class="form-group mr-3">
+                <label for="batch_input" class="mr-2">Choose a Batch:</label>
+                <select class="form-control" id="batch_input" name="batch_id" required>
+                    {% for batch in batches %}
+                        <option value="{{ batch.id }}" {% if batch.id == selected_batch %} selected {% endif %}>{{ batch.batch_id }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit Batch</button>
+        </form>
+
+        <!-- Week Selection Form -->
+        <form id="weekForm" method="get" class="form-inline">
+            <div class="form-group mr-3">
+                <label for="week_input" class="mr-2">Choose a Week:</label>
+                <input type="week" id="week_input" name="week" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit Week</button>
+        </form>
+
+        <!-- Date Selection Form -->
+        <form id="dateForm" method="get" class="form-inline">
+            <div class="form-group mr-3">
+                <label for="date_input" class="mr-2">Choose a Date:</label>
+                <select class="form-control" id="date_input" name="date" required>
+                    {% for date in week_dates %}
+                        <option value="{{ date }}">{{ date }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit Date</button>
+        </form>
+    </div>
+</div>
+
+
+<!-- Container for Student Charts -->
+<div class="container mt-5">
+    <h2>Student Attendance</h2>
+    <div id="studentCharts"></div>
+</div>
+
+<!-- JavaScript to render the charts -->
+<script>
+    var studentGraphJSON = {{ graphs|safe }};
+
+    // Function to render a Plotly chart
+    function renderChart(containerId, graphJSON) {
+        Plotly.newPlot(containerId, graphJSON.data, graphJSON.layout);
+    }
+
+    // Render Student Charts
+    for (var j = 0; j < studentGraphJSON.length; j++) {
+        var containerId = 'studentChart' + j;
+        document.getElementById('studentCharts').innerHTML += '<div id="' + containerId + '"></div>';
+        renderChart(containerId, JSON.parse(studentGraphJSON[j]));
+    }
+</script>
+<script>
+    const batchForm = document.getElementById('batchForm');
+    const weekForm = document.getElementById('weekForm');
+    const dateForm = document.getElementById('dateForm');
+    const batchInput = document.getElementById('batch_input');
+    const weekInput = document.getElementById('week_input');
+    const dateInput = document.getElementById('date_input');
+
+    batchForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const selectedBatch = batchInput.value;
+        const url = new URL(window.location.href);
+        url.searchParams.set('batch_id', selectedBatch);
+        window.location.href = url.href;
+    });
+
+    weekForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const selectedWeek = weekInput.value;
+        const url = new URL(window.location.href);
+        url.searchParams.set('week', selectedWeek);
+        window.location.href = url.href;
+    });
+
+    dateForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const selectedDate = dateInput.value;
+        if (!selectedDate) {
+            // Handle empty date input, display error message or prevent form submission
+            alert('Please select a date.');
+        } else {
+            const url = new URL(window.location.href);
+            url.searchParams.delete('date');
+            url.searchParams.set('date', selectedDate);
+            window.location.href = url.href;
+        }
+    });
+</script>
+<div class = container>
+<h2 class="text-align-center"> Attendance Data for the {{batch.batch_id}} on date {{date}}</h2>
+
+<div class="container mt-5">
+    <table class="table table-bordered">
+        <thead class="thead">
+            <tr>
+              <th rowspan="2">student id</th>
+              <th rowspan="2">Student Name</th>
+              <th colspan="2">Lab Attendance</th>
+              <th colspan="2">Theory Attendance</th>
+            </tr>
+            <tr>
+              <th>Entry Time</th>
+              <th>Exit Time</th>
+              <th>Entry Time</th>
+              <th>Exit Time</th>
+            </tr>
+          </thead>
+      <tbody>
+        {% for student in table %}
+        <tr>
+          <td>{{ student.student_id }}</td>
+          <td>{{ student.name }}</td>
+          <td>{% if student.lab_entry_time %}{{ student.lab_entry_time }}{% else %}Absent{% endif %}</td>
+          <td>{% if student.lab_exit_time %}{{ student.lab_exit_time }}{% else %}Absent{% endif %}</td>
+          <td>{% if student.theory_entry_time %}{{ student.theory_entry_time }}{% else %}Absent{% endif %}</td>
+          <td>{% if student.theory_exit_time %}{{ student.theory_exit_time }}{% else %}Absent{% endif %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock content %}

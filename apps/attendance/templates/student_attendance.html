@@ -15,30 +15,31 @@
         
         <form method="post">
             {% csrf_token %}
-            
-            <div class="row">
-                {% for student in students_data %}
-                <div class="col-md-6">
-                    <div class="card mt-4">
-                        <div class="card-body">
-                            <h3>Student: {{ student.name }}</h3>
-                            <div class="mb-3">
-                                <label for="entry_time_{{ student.student_id }}" class="form-label">Entry Time:</label>
-                                <input type="time" id="entry_time_{{ student.student_id }}" name="entry_time_{{ student.student_id }}" value="{{ student.entry_time }}" class="form-control" style="max-width: 200px;">
-                            </div>
-                            <div class="mb-3">
-                                <label for="exit_time_{{ student.student_id }}" class="form-label">Exit Time:</label>
-                                <input type="time" id="exit_time_{{ student.student_id }}" name="exit_time_{{ student.student_id }}" value="{{ student.exit_time }}" class="form-control" style="max-width: 200px;">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-            
+            <table class="table table-bordered mt-3">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Student Name</th>
+                        <th>Entry Time</th>
+                        <th>Exit Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students_data %}
+                    <tr>
+                        <td>{{ student.name }}</td>
+                        <td>
+                            <input type="time" id="entry_time_{{ student.student_id }}" name="entry_time_{{ student.student_id }}" value="{{student.entry_time}}" class="form-control" style="max-width: 200px;">
+                        </td>
+                        <td>
+                            <input type="time" id="exit_time_{{ student.student_id }}" name="exit_time_{{ student.student_id }}" value="{{student.exit_time }}" class="form-control" style="max-width: 200px;">
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
             <button type="submit" class="btn btn-info mt-3">Update Attendance</button>
         </form>
-
+        
         <h2 class="mt-5">Previous Attendance Data:</h2>
         <table class="table table-bordered mt-3">
             <thead class="thead-light">
@@ -52,8 +53,20 @@
                 {% for student in students_data %}
                 <tr>
                     <td>{{ student.name }}</td>
-                    <td>{{ student.entry_time }}</td>
-                    <td>{{ student.exit_time }}</td>
+                    <td>
+                        {% if student.entry_time %}
+                            {{ student.entry_time }}
+                        {% else %}
+                            Absent
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if student.exit_time %}
+                            {{ student.exit_time }}
+                        {% else %}
+                            Absent
+                        {% endif %}
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
