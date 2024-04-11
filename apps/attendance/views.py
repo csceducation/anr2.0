@@ -74,6 +74,15 @@ def lab_attendance(request, batch_id):
     
     return render(request, 'lab_attendance_form.html', context)
 
+def delete_lab_attendance(request,**kwargs):
+    batch_id = kwargs.get("batch_id","")
+    date = kwargs.get("date","")
+    student_id = kwargs.get("stud_id")
+    manager = AttendanceManager(connection_string, db, lab_collection)
+    manager.delete_attendance(batch_id=batch_id,date=date,student_id=student_id)
+    return redirect(request.META.get('HTTP_REFERER', '/'))
+
+
 
 def theory_attendance(request, batch_id):
     batch = get_object_or_404(BatchModel, id=batch_id)
@@ -130,6 +139,13 @@ def theory_attendance(request, batch_id):
     
     return render(request, 'theory_attendance_form.html', context)
 
+def delete_theory_attendance(request,**kwargs):
+    batch_id = kwargs.get("batch_id","")
+    date = kwargs.get("date","")
+    student_id = kwargs.get("stud_id")
+    manager = AttendanceManager(connection_string, db, theory_collection)
+    manager.delete_attendance(batch_id=batch_id,date=date,student_id=student_id)
+    return redirect(request.META.get('HTTP_REFERER', '/'))
 
 
 def staff_attendance(request):
@@ -155,9 +171,9 @@ def staff_attendance(request):
             student_id = staff.id
             entry_time = request.POST.get(f'entry_time_{staff.id}')
             exit_time = request.POST.get(f'exit_time_{staff.id}')
-
+            status = request.POST.get(f"status_{staff.id}")
             
-            manager.add_staff_attendance(student_id, date, entry_time, exit_time)
+            manager.add_staff_attendance(student_id, date, entry_time, exit_time,status)
 
         redirect_url = reverse('staff_attendance') + f'?date={date}'
         return HttpResponseRedirect(redirect_url)
@@ -170,7 +186,8 @@ def staff_attendance(request):
             'staff_id': staff.id,
             'name': staff.username,
             'entry_time': existing_data.get(str(staff.id), {}).get("entry_time", ""),
-            'exit_time': existing_data.get(str(staff.id), {}).get("exit_time", "")
+            'exit_time': existing_data.get(str(staff.id), {}).get("exit_time", ""),
+            'status':existing_data.get(str(staff.id),{}).get('status',"")
         })
 
     context = {
@@ -180,6 +197,13 @@ def staff_attendance(request):
 
     return render(request, 'staff_attendance.html', context)
 
+
+def delete_staff_attendance(request,**kwargs):
+    date = kwargs.get("date","")
+    staff_id = kwargs.get("staff_id","")
+    manager = DailyAttendanceManager(connection_string, db, staff_colletion)
+    manager.delete_staff_attendance(date,str(staff_id))
+    return redirect(request.META.get('HTTP_REFERER', '/'))
 
 def student_attendance(request):
     manager = DailyAttendanceManager(connection_string, db, student_colletion)
@@ -204,9 +228,9 @@ def student_attendance(request):
             student_id = student.id
             entry_time = request.POST.get(f'entry_time_{student.id}')
             exit_time = request.POST.get(f'exit_time_{student.id}')
-
+            status = request.POST.get(f"status_{student.id}")
             
-            manager.add_student_attendance(student_id, date, entry_time, exit_time)
+            manager.add_student_attendance(student_id, date, entry_time, exit_time,status)
 
         redirect_url = reverse('student_attendance') + f'?date={date}'
         return HttpResponseRedirect(redirect_url)
@@ -219,7 +243,8 @@ def student_attendance(request):
             'student_id': student.id,
             'name': student.student_name,
             'entry_time': existing_data.get(str(student.id), {}).get("entry_time", ""),
-            'exit_time': existing_data.get(str(student.id), {}).get("exit_time", "")
+            'exit_time': existing_data.get(str(student.id), {}).get("exit_time", ""),
+            'status': existing_data.get(str(student.id), {}).get("status", "")
         })
 
     context = {
@@ -228,6 +253,13 @@ def student_attendance(request):
     }
 
     return render(request, 'student_attendance.html', context)
+
+def delete_student_attendance(request,**kwargs):
+    date = kwargs.get("date","")
+    student_id = kwargs.get("student_id","")
+    manager = DailyAttendanceManager(connection_string, db, student_colletion)
+    manager.delete_staff_attendance(date,str(student_id))
+    return redirect(request.META.get('HTTP_REFERER', '/'))
 
 
 def router(request):

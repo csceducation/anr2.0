@@ -70,10 +70,11 @@ class DailyAttendanceManager:
             }
             self.attendance_collection.insert_one(document)
 
-    def add_staff_attendance(self, staff_id ,date, entry_time, exit_time):
+    def add_staff_attendance(self, staff_id ,date, entry_time, exit_time,status):
         attendance_data = {
             "entry_time": entry_time,
-            "exit_time": exit_time
+            "exit_time": exit_time,
+            "status":status
         }
         self.attendance_collection.update_one(
             {"date": date},
@@ -96,10 +97,11 @@ class DailyAttendanceManager:
             return document.get("attendance", {})
         return {}
 
-    def delete_staff_attendance(self, date):
+    def delete_staff_attendance(self, date,entry_number):
+        field_to_unset = f"attendance.{entry_number}"
         self.attendance_collection.update_one(
             {"date": date},
-            {"$unset": {"attendance": ""}}
+            {"$unset": {field_to_unset: ""}}
         )
 
     def initialize_student(self, date):
@@ -111,10 +113,11 @@ class DailyAttendanceManager:
             }
             self.attendance_collection.insert_one(document)
 
-    def add_student_attendance(self, student_id,date, entry_time, exit_time):
+    def add_student_attendance(self, student_id,date, entry_time, exit_time,status):
         attendance_data = {
             "entry_time": entry_time,
-            "exit_time": exit_time
+            "exit_time": exit_time,
+            "status":status
         }
         self.attendance_collection.update_one(
             {"date": date},
@@ -137,9 +140,11 @@ class DailyAttendanceManager:
             return document.get("attendance", {})
         return {}
 
-    def delete_student_attendance(self, date):
+    def delete_student_attendance(self, date, entry_number):
+        field_to_unset = f"attendance.{entry_number}"
         self.attendance_collection.update_one(
             {"date": date},
-            {"$unset": {"attendance": ""}}
+            {"$unset": {field_to_unset: ""}}
         )
+
 

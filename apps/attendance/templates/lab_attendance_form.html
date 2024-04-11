@@ -55,15 +55,22 @@
             <th>Attendance Status</th>
             <th>Entry Time</th>
             <th>Exit Time</th>
+            <th>Action</th>
         </tr>
     </thead>
     <tbody>
         {% for student in students_data %}
         <tr>
             <td>{{ student.name }}</td>
-            <td>{{student.status}}</td>
+            <td>{% if student.status %} {{student.status}} {% else %}-{% endif %}</td>
             <td>{% if student.entry_time %}{{ student.entry_time }}{% else %}-{% endif %}</td>
             <td>{% if student.exit_time %}{{ student.exit_time }}{% else %}-{% endif %}</td>
+            <td>
+                <form method="post" action="{% url 'delete_lab_attendance' batch_id=batch.id date=date stud_id=student.student_id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                </form>
+            </td>
         </tr>
         {% endfor %}
     </tbody>
