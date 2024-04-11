@@ -32,6 +32,7 @@ urlpatterns = [
     path("result/", include("apps.result.urls")),
     path("enquiry/",include("apps.enquiry.urls")),
     path('public/student/<int:pk>/', views.PublicView.as_view(), name='public_student_profile'),
+    path('public/student/<int:pk>/attendance', views.StudentAttendanceView.as_view(), name='public_student_profile_attendance'),
     path("revenue/", include("apps.revenue.urls")),
     path("course/", include("apps.course.urls")),
     path("batches/",include("apps.batch.urls")),

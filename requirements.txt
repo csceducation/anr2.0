@@ -20,5 +20,9 @@ pytz
 regex 
 sqlparse 
 tomli 
+pymongo
+plotly
+pandas
+
 
 

@@ -35,8 +35,7 @@ from .models import Student, StudentBulkUpload,Bookmodel,Classmodel,Exammodel,Ce
 from django.utils.decorators import method_decorator
 from apps.corecode.views import student_entry_resricted,staff_student_entry_restricted,different_user_restricted
 from django.contrib.auth.decorators import login_required
-
-
+from apps.attendance import attendance_manager , dashboard
 
 def generate_student_id_card(request,student_id):
         # Create a blank image
@@ -49,7 +48,7 @@ def generate_student_id_card(request,student_id):
 
 
     # Use the system font for ImageFont
-    font = ImageFont.load_default()
+    font = ImageFont.truetype('arial.ttf', size=45)
 
 
     d_date = datetime.datetime.now()
@@ -103,7 +102,7 @@ def generate_student_id_card(request,student_id):
 
 
     # Save the edited image
-    image_path = os.path.join(settings.BASE_DIR, "media/idcards", f"student_id_card_{student_id}.png")
+    image_path = os.path.join(settings.BASE_DIR, "media\\idcards", f"student_id_card_{student_id}.png")
     image.save(image_path)
 
     # Generate QR code
@@ -118,7 +117,7 @@ def generate_student_id_card(request,student_id):
     qr.make(fit=True)
     qr_image = qr.make_image(fill_color="black", back_color="white")
 
-    qr_path = os.path.join('media/qrcodes', f'qr_code{student_id}.png')
+    qr_path = os.path.join('media\\qrcodes', f'qr_code{student_id}.png')
     qr_image.save(qr_path)
 
     # Paste QR code onto the ID card
@@ -139,7 +138,6 @@ def generate_student_id_card(request,student_id):
     return response
 def handler404(request, exception):
     return render(request, '404.html', status=404)
-
 
 @method_decorator(student_entry_resricted(),name='dispatch')
 class StudentListView(LoginRequiredMixin, ListView):
@@ -591,4 +589,15 @@ class PublicView(PublicAccessMixin,DetailView):
         context["classlog"] = Classmodel.objects.filter(student=self.object)
         context["examlog"] = Exammodel.objects.filter(student=self.object)
         context["certilog"] = Certificatemodel.objects.filter(student=self.object)
+        return context
+    
+@method_decorator(login_required(),name='dispatch')
+class StudentAttendanceView(PublicAccessMixin,DetailView):
+     model = Student
+     template_name = "public/student_attendance.html"
+     manager = dashboard.DashboardManager("anr_attendance")
+     tabel = manager.get_student_table("2024-04-11")
+     def get_context_data(self, **kwargs):
+        context = super(StudentAttendanceView, self).get_context_data(**kwargs)
+        context['table'] = self.tabel
         return context

@@ -11,6 +11,7 @@ from django.db.models.signals import pre_delete
 class Staff(models.Model):
     username = models.CharField(max_length=20,blank=False)
     password = models.CharField(max_length=20,blank=False)
+    STAFF_TIMING_CHOICE = [("Full Time","Full Time"),("Part Time","Part Time")]
     STATUS = [("active", "Active"), ("inactive", "Inactive")]
     staff_roll = [("Administrative staff","Administrative staff"),("Acadamic Staff","Acadamic Staff"),('Acadamic & Administrator', 'Acadamic & Administrator'),('other', 'Other')]
     certificate_choice = [("Aadhar card","Aadhar card"),("Degree certificate","Degree certificate"),("Resume","Resume")]
@@ -38,8 +39,8 @@ class Staff(models.Model):
         validators=[mobile_num_regex], max_length=13, blank=True
     )
     email = models.EmailField("Email", blank=False, default="")
-
-
+    
+    staff_timing = models.CharField("Staff Timing",choices=STAFF_TIMING_CHOICE,default="Full Time",max_length=1023)
     address = models.CharField("Address", max_length=255,default=None,blank=True)
     address1 = models.CharField("Address Line 2", max_length=255,default=None,blank=True,null=True)
     address2 = models.CharField("Address Line 3", max_length=255,default=None,blank=True,null=True)
@@ -49,7 +50,9 @@ class Staff(models.Model):
     passport = models.ImageField("Photo",blank=True, upload_to="staff/certificates/")
     aadhar_card = models.ImageField("Aadhar Card",blank=True, upload_to="staff/certificates/")
     degree_certificate = models.ImageField("Degree Certificate",blank=True, upload_to="staff/certificates/")
+
     resume = models.ImageField("Resume",blank=True, upload_to="staff/certificates/")
+    
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True,related_name='staff_profile')
 
 
