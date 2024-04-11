@@ -46,9 +46,9 @@ def lab_attendance(request, batch_id):
             student_id = student.id
             entry_time = request.POST.get(f'entry_time_{student_id}')
             exit_time = request.POST.get(f'exit_time_{student_id}')
-
+            status = request.POST.get(f"status_{student_id}")
             
-            manager.add_attendance(batch_id, student_id, date, entry_time, exit_time)
+            manager.add_attendance(batch_id, student_id, date, entry_time, exit_time,status)
 
         redirect_url = reverse('lab_attendance', kwargs={'batch_id': batch_id}) + f'?date={date}'
         return HttpResponseRedirect(redirect_url)
@@ -61,7 +61,8 @@ def lab_attendance(request, batch_id):
             'student_id': student_id,
             'name': student.student_name,
             'entry_time': existing_data.get(str(student_id),{}).get("entry_time",""),
-            'exit_time': existing_data.get(str(student_id),{}).get("exit_time","")
+            'exit_time': existing_data.get(str(student_id),{}).get("exit_time",""),
+            'status':existing_data.get(str(student_id),{}).get('status',"")
         }
         students_data.append(student_data)
     
@@ -101,9 +102,9 @@ def theory_attendance(request, batch_id):
             student_id = student.id
             entry_time = request.POST.get(f'entry_time_{student_id}')
             exit_time = request.POST.get(f'exit_time_{student_id}')
-
+            status = request.POST.get(f"status_{student_id}")
             
-            manager.add_attendance(batch_id, student_id, date, entry_time, exit_time)
+            manager.add_attendance(batch_id, student_id, date, entry_time, exit_time,status)
 
         redirect_url = reverse('theory_attendance', kwargs={'batch_id': batch_id}) + f'?date={date}'
         return HttpResponseRedirect(redirect_url)
@@ -116,7 +117,8 @@ def theory_attendance(request, batch_id):
             'student_id': student_id,
             'name': student.student_name,
             'entry_time': existing_data.get(str(student_id),{}).get("entry_time",""),
-            'exit_time': existing_data.get(str(student_id),{}).get("exit_time","")
+            'exit_time': existing_data.get(str(student_id),{}).get("exit_time",""),
+            'status':existing_data.get(str(student_id),{}).get('status',"")
         }
         students_data.append(student_data)
     
@@ -378,10 +380,54 @@ def batch_dashboard(request, *args,**kwargs):
         student_graphJSON = json.dumps(student_fig)
         graphs.append(student_graphJSON)
         #print(data)
+    
     batch_id = request.GET.get('batch_id',None)
+    
     if batch_id ==  None:
-        return render(request,"dashboard_try.html",{"graphs":graphs,"week_dates":dates,'batches':batches})
+        return render(request,"batch_dashboard.html",{"graphs":graphs,"week_dates":dates,'batches':batches})
+    
     table = manager.get_batch_attendance(date,int(batch_id))
     batch = BatchModel.objects.get(id=batch_id)
-    return render(request,"batch_dashboard.html",{"graphs":graphs,"week_dates":dates,"table":table,'batches':batches,'batch':batch,'date':date})
+    if date == None:
+        return render(request,"batch_dashboard.html",{"graphs":graphs,"week_dates":dates,"table":table,'batches':batches,'batch':batch,'date':date})
+    
+    if date != None:
+        total_presentees_lab,total_presentees_theory,total_strength = extract_totals(graphs,date)
+        metrics = {
+            "total_strength":total_strength,
+            "total_lab_presentees":total_presentees_lab,
+            "total_theory_presentees":total_presentees_theory
+        }
+        return render(request,"batch_dashboard.html",{"graphs":graphs,"week_dates":dates,"table":table,'batches':batches,'batch':batch,'date':date,'metrics':metrics})
+
+    #table = manager.get_batch_attendance(date,int(batch_id))
+    #batch = BatchModel.objects.get(id=batch_id)
+    #return render(request,"batch_dashboard.html",{"graphs":graphs,"week_dates":dates,"table":table,'batches':batches,'batch':batch,'date':date})
     #return JsonResponse(graphs,safe=False,status=200)
+
+
+
+def extract_totals(data, target_date):
+    for json_str in data:
+        # Parse the JSON string
+        parsed_json = json.loads(json_str)
+
+        # Get the x values (dates) and y values (attendance)
+        x_values = parsed_json['data'][0]['x']
+        y_values_presentees_lab = parsed_json['data'][0]['y']
+        y_values_presentees_theory = parsed_json['data'][1]['y']
+        y_values_strength = parsed_json['data'][2]['y']
+
+        # Find the index of the target date
+        try:
+            index = x_values.index(target_date)
+        except ValueError:
+            print(f"Date {target_date} not found in the data.")
+            continue
+
+        # Get the total strength and total presentees for the target date
+        total_strength = y_values_strength[index]
+        total_presentees_lab = y_values_presentees_lab[index]
+        total_presentees_theory = y_values_presentees_theory[index]
+
+        return total_presentees_lab,total_presentees_theory,total_strength

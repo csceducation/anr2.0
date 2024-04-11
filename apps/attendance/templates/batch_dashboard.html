@@ -109,6 +109,24 @@
 </script>
 <div class = container>
 <h2 class="text-align-center"> Attendance Data for the {{batch.batch_id}} on date {{date}}</h2>
+<br>
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h5 class="text-primary">Total Strength for the current batch : {{metrics.total_strength}}</h5>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <h5 class="text-success">Total presentees (lab) for the current batch : {{metrics.total_lab_presentees}}</h5>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <h5 class="text-info">Total presentees (theory) for the current batch : {{metrics.total_theory_presentees}}</h5>
+        </div>
+    </div>
+</div>
 
 <div class="container mt-5">
     <table class="table table-bordered">
@@ -116,12 +134,14 @@
             <tr>
               <th rowspan="2">student id</th>
               <th rowspan="2">Student Name</th>
-              <th colspan="2">Lab Attendance</th>
-              <th colspan="2">Theory Attendance</th>
+              <th colspan="3">Lab Attendance</th>
+              <th colspan="3">Theory Attendance</th>
             </tr>
             <tr>
+              <th>Status</th>
               <th>Entry Time</th>
               <th>Exit Time</th>
+              <th>Status</th>
               <th>Entry Time</th>
               <th>Exit Time</th>
             </tr>
@@ -131,10 +151,12 @@
         <tr>
           <td>{{ student.student_id }}</td>
           <td>{{ student.name }}</td>
-          <td>{% if student.lab_entry_time %}{{ student.lab_entry_time }}{% else %}Absent{% endif %}</td>
-          <td>{% if student.lab_exit_time %}{{ student.lab_exit_time }}{% else %}Absent{% endif %}</td>
-          <td>{% if student.theory_entry_time %}{{ student.theory_entry_time }}{% else %}Absent{% endif %}</td>
-          <td>{% if student.theory_exit_time %}{{ student.theory_exit_time }}{% else %}Absent{% endif %}</td>
+          <td>{{student.lab_status}}</td>
+          <td>{% if student.lab_entry_time %}{{ student.lab_entry_time }}{% else %}-{% endif %}</td>
+          <td>{% if student.lab_exit_time %}{{ student.lab_exit_time }}{% else %}--{% endif %}</td>
+          <td>{{student.theory_status}}</td>
+          <td>{% if student.theory_entry_time %}{{ student.theory_entry_time }}{% else %}--{% endif %}</td>
+          <td>{% if student.theory_exit_time %}{{ student.theory_exit_time }}{% else %}--{% endif %}</td>
         </tr>
         {% endfor %}
       </tbody>

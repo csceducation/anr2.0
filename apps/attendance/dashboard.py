@@ -158,7 +158,9 @@ class DashboardManager:
                         'lab_entry_time': attendance_data.get("entry_time", ""),
                         'lab_exit_time': attendance_data.get("exit_time", ""),
                         'theory_entry_time': "",
-                        'theory_exit_time': ""
+                        'theory_exit_time': "",
+                        'theory_status':"",
+                        'lab_status':attendance_data.get("status","")
                     }
                     students_data.append(student_info)
 
@@ -172,6 +174,7 @@ class DashboardManager:
                     if existing_student:
                         existing_student['theory_entry_time'] = student_info.get("entry_time", "")
                         existing_student['theory_exit_time'] = student_info.get("exit_time", "")
+                        existing_student['theory_status'] = student_info.get("status","")
                     else:
                         student_info = {
                             'student_id': student.enrol_no,
@@ -179,7 +182,8 @@ class DashboardManager:
                             'lab_entry_time': "",
                             'lab_exit_time': "",
                             'theory_entry_time': student_info.get("entry_time", ""),
-                            'theory_exit_time': student_info.get("exit_time", "")
+                            'theory_exit_time': student_info.get("exit_time", ""),
+                            'theory_status':student_info.get("status","")
                         }
                         students_data.append(student_info)
 

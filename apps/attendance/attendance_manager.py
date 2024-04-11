@@ -20,20 +20,22 @@ class AttendanceManager:
             }
             self.collection.insert_one(document)
 
-    def add_attendance(self, batch_id, student_id, date, entry_time, exit_time):
+    def add_attendance(self, batch_id, student_id, date, entry_time, exit_time,status):
         attendance_data = {
             "entry_time": entry_time,
-            "exit_time": exit_time
+            "exit_time": exit_time,
+            "status":status
         }
         self.collection.update_one(
             {"batch_id": batch_id, "date": date},
             {"$set": {f"students.{student_id}": attendance_data}}
         )
 
-    def update_attendance(self, batch_id, student_id, date, entry_time, exit_time):
+    def update_attendance(self, batch_id, student_id, date, entry_time, exit_time,status):
         attendance_data = {
             "entry_time": entry_time,
-            "exit_time": exit_time
+            "exit_time": exit_time,
+            "status":status
         }
         self.collection.update_one(
             {"batch_id": batch_id, "date": date},
