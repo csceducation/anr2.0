@@ -47,8 +47,8 @@ def lab_attendance(request, batch_id):
             entry_time = request.POST.get(f'entry_time_{student_id}')
             exit_time = request.POST.get(f'exit_time_{student_id}')
             status = request.POST.get(f"status_{student_id}")
-            
-            manager.add_attendance(batch_id, student_id, date, entry_time, exit_time,status)
+            system_no = request.POST.get(f"system_no_{student_id}")
+            manager.update_attendance(batch_id, student_id, date, entry_time, exit_time,status,system_no)
 
         redirect_url = reverse('lab_attendance', kwargs={'batch_id': batch_id}) + f'?date={date}'
         return HttpResponseRedirect(redirect_url)
@@ -62,7 +62,9 @@ def lab_attendance(request, batch_id):
             'name': student.student_name,
             'entry_time': existing_data.get(str(student_id),{}).get("entry_time",""),
             'exit_time': existing_data.get(str(student_id),{}).get("exit_time",""),
-            'status':existing_data.get(str(student_id),{}).get('status',"")
+            'status':existing_data.get(str(student_id),{}).get('status',""),
+            'system_no':existing_data.get(str(student_id),{}).get('system_no',""),
+
         }
         students_data.append(student_data)
     
@@ -96,6 +98,9 @@ def theory_attendance(request, batch_id):
             form = DateForm(request.POST)
             if form.is_valid():
                 date = form.cleaned_data['date']
+                content = form.cleaned_data['content']
+                date_string = date.strftime("%Y-%m-%d")
+                manager.initialize_batch(batch_id,date_string,content)
                 #entry_time = form.cleaned_data['entry_time']
                 #exit_time = form.cleaned_data['exit_time']
                 return HttpResponseRedirect(request.path + f"?date={date}")
@@ -103,7 +108,7 @@ def theory_attendance(request, batch_id):
             form = DateForm()
         return render(request, 'date_form.html', {'form': form})
 
-    manager.initialize_batch(batch_id,date)
+    
     existing_data = manager.get_attendance(batch_id, date)
 
     if request.method == 'POST':

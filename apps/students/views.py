@@ -35,7 +35,8 @@ from .models import Student, StudentBulkUpload,Bookmodel,Classmodel,Exammodel,Ce
 from django.utils.decorators import method_decorator
 from apps.corecode.views import student_entry_resricted,staff_student_entry_restricted,different_user_restricted
 from django.contrib.auth.decorators import login_required
-from apps.attendance import attendance_manager , dashboard
+from apps.attendance.dashboard import DashboardManager
+from apps.batch.models import BatchModel
 
 def generate_student_id_card(request,student_id):
         # Create a blank image
@@ -591,13 +592,27 @@ class PublicView(PublicAccessMixin,DetailView):
         context["certilog"] = Certificatemodel.objects.filter(student=self.object)
         return context
     
-@method_decorator(login_required(),name='dispatch')
-class StudentAttendanceView(PublicAccessMixin,DetailView):
-     model = Student
-     template_name = "public/student_attendance.html"
-     manager = dashboard.DashboardManager("anr_attendance")
-     tabel = manager.get_student_table("2024-04-11")
-     def get_context_data(self, **kwargs):
-        context = super(StudentAttendanceView, self).get_context_data(**kwargs)
-        context['table'] = self.tabel
-        return context
+#@method_decorator(login_required(),name='dispatch')
+#class StudentAttendanceView(PublicAccessMixin,DetailView):
+#     model = Student
+#     template_name = "public/student_attendance.html"
+#     manager = dashboard.DashboardManager("anr_attendance")
+#     tabel = manager.get_student_table("2024-04-11")
+#     def get_context_data(self, **kwargs):
+#        context = super(StudentAttendanceView, self).get_context_data(**kwargs)
+#        context['table'] = self.tabel
+#        return context
+
+
+
+def attendance_test(request,**kwargs):
+    student_id = kwargs.get('pk')
+    student = Student.objects.get(id=student_id)
+    batches = BatchModel.objects.filter(batch_students__id=student.id)
+    manager = DashboardManager('anr_attendance')
+    data = {}
+    for batch in batches:
+        x = manager.get_public_attendance(student.id,batch.id)
+        data[batch.id] = x
+    
+    return render(request, 'attendance.html', {'data':data})

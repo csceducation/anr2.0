@@ -9,16 +9,26 @@ class AttendanceManager:
         self.db = self.client[self.db_name]
         self.collection = self.db[collection_name]
 
-    def initialize_batch(self, batch_id, date):
+    def initialize_batch(self, batch_id, date,content=None):
         # Check if batch already exists for the given batch_id and date
         existing_batch = self.collection.find_one({"batch_id": batch_id, "date": date})
+
         if existing_batch is None:
-            document = {
-                "batch_id": batch_id,
-                "date": date,
-                "students": {}
-            }
-            self.collection.insert_one(document)
+            if content != None:
+                document = {
+                    "batch_id": batch_id,
+                    "date": date,
+                    "content":content,
+                    "students": {}
+                }
+                self.collection.insert_one(document)
+            else:
+                document = {
+                    "batch_id": batch_id,
+                    "date": date,
+                    "students": {}
+                }
+                self.collection.insert_one(document)
 
     def add_attendance(self, batch_id, student_id, date, entry_time, exit_time,status):
         attendance_data = {
@@ -31,11 +41,12 @@ class AttendanceManager:
             {"$set": {f"students.{student_id}": attendance_data}}
         )
 
-    def update_attendance(self, batch_id, student_id, date, entry_time, exit_time,status):
+    def update_attendance(self, batch_id, student_id, date, entry_time, exit_time,status,system_no):
         attendance_data = {
             "entry_time": entry_time,
             "exit_time": exit_time,
-            "status":status
+            "status":status,
+            'system_no':system_no
         }
         self.collection.update_one(
             {"batch_id": batch_id, "date": date},

@@ -189,3 +189,50 @@ class DashboardManager:
 
         return students_data
 
+    def get_public_attendance(self,student,batch_id):
+        print(batch_id)
+        pipeline = [
+            {"$match": {"batch_id": batch_id}},
+            {"$sort": {"date": 1}} 
+        ]
+
+        lab_documents = list(self.lab_collection.aggregate(pipeline))
+        theory_documents = list(self.theory_collection.aggregate(pipeline))
+        
+        return create_student_data(student,lab_documents,theory_documents,batch_id)
+
+
+def create_student_data(student_id, lab_documents, theory_documents,batch_id):
+    student_lab_data = []
+    student_theory_data = []
+    batch = BatchModel.objects.get(id=batch_id)
+    for lab_doc in lab_documents:
+        if str(student_id) in lab_doc['students']:
+            student_lab_data.append({
+                'date': lab_doc['date'],
+                'entry_time': lab_doc['students'][str(student_id)].get('entry_time', ''),
+                'exit_time': lab_doc['students'][str(student_id)].get('exit_time', ''),
+                'system_no': lab_doc['students'][str(student_id)].get('system_no', '')
+            })
+
+    for theory_doc in theory_documents:
+        if str(student_id) in theory_doc.get('students', {}):
+            student_theory_data.append({
+                'date': theory_doc['date'],
+                'content': theory_doc.get('content', ''),
+                'entry_time': theory_doc['students'][str(student_id)].get('entry_time', ''),
+                'exit_time': theory_doc['students'][str(student_id)].get('exit_time', ''),
+                'status': theory_doc['students'][str(student_id)].get('status', ''),
+            })
+        
+    data = {
+        "batch_info":{
+            "batch_id":batch.batch_id,
+            "batch_subject":batch.batch_course.name,
+            "batch_staff":batch.batch_staff.username
+        },
+        "lab":student_lab_data,
+        "theory":student_theory_data
+    }
+
+    return data

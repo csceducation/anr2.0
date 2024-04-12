@@ -22,6 +22,7 @@
                 <th>Status</th>
                 <th>Entry Time</th>
                 <th>Exit Time</th>
+                <th>system_no</th>
             </tr>
         </thead>
         <tbody>
@@ -40,6 +41,9 @@
                 <td>
                     <input type="time" id="exit_time_{{ student.student_id }}" name="exit_time_{{ student.student_id }}" value="{{ student.exit_time }}" class="form-control exit-time" style="max-width: 200px;" {% if not student.exit_time %}disabled{% endif %}>
                 </td>
+                <td>
+                    <input type="number" id="system_no_{{ student.student_id }}" name="system_no_{{ student.student_id }}" value="{{ student.system_no }}" class="form-control entry-time" style="max-width: 200px;" >
+                </td>
             </tr>
             {% endfor %}
         </tbody>
@@ -55,6 +59,7 @@
             <th>Attendance Status</th>
             <th>Entry Time</th>
             <th>Exit Time</th>
+            <th>system_no</th>
             <th>Action</th>
         </tr>
     </thead>
@@ -65,6 +70,7 @@
             <td>{% if student.status %} {{student.status}} {% else %}-{% endif %}</td>
             <td>{% if student.entry_time %}{{ student.entry_time }}{% else %}-{% endif %}</td>
             <td>{% if student.exit_time %}{{ student.exit_time }}{% else %}-{% endif %}</td>
+            <td>{{ student.system_no }}</td>
             <td>
                 <form method="post" action="{% url 'delete_lab_attendance' batch_id=batch.id date=date stud_id=student.student_id %}">
                     {% csrf_token %}
@@ -83,8 +89,8 @@
         const statusSelects = document.querySelectorAll(".status-select");
         
         statusSelects.forEach(function(select) {
-            const entryTimeInput = select.parentElement.nextElementSibling.querySelector(".entry-time");
-            const exitTimeInput = select.parentElement.nextElementSibling.nextElementSibling.querySelector(".exit-time");
+            const entryTimeInput = select.closest("tr").querySelector(".entry-time");
+            const exitTimeInput = select.closest("tr").querySelector(".exit-time");
             
             select.addEventListener("change", function() {
                 if (select.value === "present") {
@@ -98,5 +104,6 @@
         });
     });
 </script>
+
 
 {% endblock content %}
