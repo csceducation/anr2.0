@@ -615,4 +615,4 @@ def attendance_test(request,**kwargs):
         x = manager.get_public_attendance(student.id,batch.id)
         data[batch.id] = x
     
-    return render(request, 'attendance.html', {'data':data})
+    return render(request, 'public/student_attendance.html', {'data':data,'object':student})

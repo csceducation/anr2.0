@@ -474,7 +474,7 @@ p{
             <h2 style="display:block">C<span class="danger">S</span>C AnnamalaiNagar</h2>
         </div>
         <div class="navbar">
-            <a href="index.html">
+            <a href="{% url 'public_student_profile_attendance' pk=object.id %}">
                 <span class="material-icons-sharp">note</span>
                 <h3>Attendance</h3>
             </a>
