@@ -97,31 +97,3 @@ class Due(models.Model):
         super().save(*args, **kwargs)
 
 
-
-from django.db import connection
-
-# Get the current date
-current_date = "2024-04-13"
-from django.db.models import Q
-import json
-
-# Fetch all Due objects
-all_dues = Due.objects.all()
-
-# List to store filtered dues
-filtered_dues = []
-
-# Iterate through each Due object
-for due in all_dues:
-    # Convert the JSON string to a Python object
-    dues_list = json.loads(due.dues)
-
-    # Iterate through each item in the dues list
-    for item in dues_list:
-        # Check if 'date' key exists in the item and if its value matches the current date
-        if 'date' in item and item['date'] == str(current_date):
-            # If it matches, add the Due object to the filtered list
-            filtered_dues.append(due)
-
-# Now filtered_dues contains Due objects where any of the JSON items has the current date
-print(filtered_dues)
