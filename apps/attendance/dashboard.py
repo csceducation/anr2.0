@@ -190,7 +190,6 @@ class DashboardManager:
         return students_data
 
     def get_public_attendance(self,student,batch_id):
-        print(batch_id)
         pipeline = [
             {"$match": {"batch_id": batch_id}},
             {"$sort": {"date": 1}} 

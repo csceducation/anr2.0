@@ -23,19 +23,23 @@ def lab_attendance(request, batch_id):
     batch = get_object_or_404(BatchModel, id=batch_id)
     manager = AttendanceManager(connection_string, db, lab_collection)
     
-    if 'date' in request.GET:
+    if 'date' in request.GET and 'entrytime' in request.GET and 'exittime' in request.GET:
         date = request.GET.get('date')
+        p_entry_time = request.GET.get('entrytime')
+        p_exit_time = request.GET.get('exittime')
     else:
         
         if request.method == 'POST':
             form = DateForm(request.POST)
+            form.fields.pop('content')
             if form.is_valid():
                 date = form.cleaned_data['date']
-                #entry_time = form.cleaned_data['entry_time']
-                #exit_time = form.cleaned_data['exit_time']
-                return HttpResponseRedirect(request.path + f"?date={date}")
+                entrytime = form.cleaned_data['entrytime']
+                exittime = form.cleaned_data['exittime']
+                return HttpResponseRedirect(request.path + f"?date={date}&entrytime={entrytime}&exittime={exittime}")
         else:
             form = DateForm()
+            form.fields.pop('content')
         return render(request, 'date_form.html', {'form': form})
     
     manager.initialize_batch(batch_id,date)
@@ -72,6 +76,8 @@ def lab_attendance(request, batch_id):
         'batch': batch,
         'date': date,
         'students_data': students_data,
+        'entry_time':p_entry_time,
+        'exit_time':p_exit_time,
     }
     
     return render(request, 'lab_attendance_form.html', context)
@@ -90,8 +96,10 @@ def theory_attendance(request, batch_id):
     batch = get_object_or_404(BatchModel, id=batch_id)
     manager = AttendanceManager(connection_string, db, theory_collection)
 
-    if 'date' in request.GET:
+    if 'date' in request.GET and 'entrytime' in request.GET and 'exittime' in request.GET:
         date = request.GET.get('date')
+        p_entry_time = request.GET.get('entrytime')
+        p_exit_time = request.GET.get('exittime')
     else:
         
         if request.method == 'POST':
@@ -101,9 +109,9 @@ def theory_attendance(request, batch_id):
                 content = form.cleaned_data['content']
                 date_string = date.strftime("%Y-%m-%d")
                 manager.initialize_batch(batch_id,date_string,content)
-                #entry_time = form.cleaned_data['entry_time']
-                #exit_time = form.cleaned_data['exit_time']
-                return HttpResponseRedirect(request.path + f"?date={date}")
+                entrytime = form.cleaned_data['entrytime']
+                exittime = form.cleaned_data['exittime']
+                return HttpResponseRedirect(request.path + f"?date={date}&entrytime={entrytime}&exittime={exittime}")
         else:
             form = DateForm()
         return render(request, 'date_form.html', {'form': form})
@@ -140,6 +148,8 @@ def theory_attendance(request, batch_id):
         'batch': batch,
         'date': date,
         'students_data': students_data,
+        'entry_time':p_entry_time,
+        'exit_time':p_exit_time,
     }
     
     return render(request, 'theory_attendance_form.html', context)

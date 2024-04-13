@@ -30,15 +30,17 @@
                 <td>{{ student.name }}</td>
                 <td>
                     <select name="status_{{ student.student_id }}" id="status_{{ student.student_id }}" class="form-control status-select" style="max-width: 200px;">
-                        <option value="absent" {% if not student.entry_time and not student.exit_time %}selected{% endif %}>Absent</option>
-                        <option value="present" {% if student.entry_time or student.exit_time %}selected{% endif %}>Present</option>
+                        <option value="present" selected>Present</option>
+                        <option value="absent">Absent</option>
                     </select>
                 </td>
                 <td>
-                    <input type="time" id="entry_time_{{ student.student_id }}" name="entry_time_{{ student.student_id }}" value="{{ student.entry_time }}" class="form-control entry-time" style="max-width: 200px;" {% if not student.entry_time %}disabled{% endif %}>
+                    <input type="time" id="entry_time_{{ student.student_id }}" name="entry_time_{{ student.student_id }}" {% if not student.entry_time %}
+                    value="{{ entry_time }}" {% else %} value="{{student.entry_time}}" {% endif %} class="form-control entry-time" style="max-width: 200px;" {% if not student.entry_time %}disabled{% endif %}>
                 </td>
                 <td>
-                    <input type="time" id="exit_time_{{ student.student_id }}" name="exit_time_{{ student.student_id }}" value="{{ student.exit_time }}" class="form-control exit-time" style="max-width: 200px;" {% if not student.exit_time %}disabled{% endif %}>
+                    <input type="time" id="exit_time_{{ student.student_id }}" name="exit_time_{{ student.student_id }}"{% if not student.exit_time %}
+                    value="{{ exit_time }}" {% else %} value="{{student.exit_time}}" {% endif %}  class="form-control exit-time" style="max-width: 200px;" {% if not student.exit_time %}disabled{% endif %}>
                 </td>
             </tr>
             {% endfor %}
@@ -85,7 +87,8 @@
         statusSelects.forEach(function(select) {
             const entryTimeInput = select.parentElement.nextElementSibling.querySelector(".entry-time");
             const exitTimeInput = select.parentElement.nextElementSibling.nextElementSibling.querySelector(".exit-time");
-            
+            entryTimeInput.removeAttribute("disabled");
+            exitTimeInput.removeAttribute("disabled");            
             select.addEventListener("change", function() {
                 if (select.value === "present") {
                     entryTimeInput.removeAttribute("disabled");
