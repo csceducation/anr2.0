@@ -45,6 +45,7 @@ class InvoiceCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 def save_bill_details(request):
+    due = request.GET.get('due',None)
     last_receipt = Receipt.objects.last()
     if request.method == 'POST':
         student = request.POST.get('student')
@@ -61,8 +62,10 @@ def save_bill_details(request):
             return redirect('bill')
 
         # Perform any necessary validation and save to the database
-        Receipt.objects.create(Bill_No=bill_number,invoice=Invoice.objects.get(student=student), amount_paid=amount,date_paid=bill_date, comment=comment,received_by=Staff.objects.get(id=re_by))
-
+        if due == None:
+            Receipt.objects.create(Bill_No=bill_number,invoice=Invoice.objects.get(student=student), amount_paid=amount,date_paid=bill_date, comment=comment,received_by=Staff.objects.get(id=re_by))
+        else:
+            Receipt.objects.create(Bill_No=bill_number,invoice=Invoice.objects.get(student=student), amount_paid=amount,date_paid=bill_date, comment=comment,received_by=Staff.objects.get(id=re_by),due=due)
         # Redirect to a success page or wherever you'd like
         return redirect('bill')
 
@@ -145,3 +148,41 @@ class ReceiptDeleteView(LoginRequiredMixin, DeleteView):
 @login_required
 def bulk_invoice(request):
     return render(request, "finance/bulk_invoice.html")
+
+
+from django.http import JsonResponse
+import json
+from .models import Due
+
+
+def due_view(request, *args, **kwargs):
+    if request.method == 'POST':
+        invoice_id = kwargs.get("invoice_id")
+        invoice = Invoice.objects.filter(id=invoice_id).first()
+        dues_data = json.loads(request.POST.get('duesData'))
+
+        # Check if Due object already exists
+        due_obj, created = Due.objects.get_or_create(invoice=invoice,total_amount=invoice.total_amount_payable())
+
+        # If Due object exists, update the data
+        if not created:
+            # Clear existing dues
+            due_obj.dues.clear()
+
+        # Add new dues
+        for values in dues_data.values():
+            due_obj.dues.append(values)
+        
+        due_obj.save()
+
+        return JsonResponse({'message': 'Dues saved successfully'})
+
+    # Check if Due object exists for the invoice
+    has_previous = Due.objects.filter(invoice__id=kwargs.get('invoice_id')).exists()
+    if has_previous:
+        due = Due.objects.filter(invoice__id=kwargs.get('invoice_id')).first()
+        dues = due.dues
+        context = {"dues": dues}
+        return render(request, 'finance/due.html', context)
+    else:
+        return render(request, 'finance/due.html')

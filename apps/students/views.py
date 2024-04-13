@@ -169,6 +169,7 @@ class StudentDetailView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(StudentDetailView, self).get_context_data(**kwargs)
+        context['invoice'] = Invoice.objects.filter(student__id = self.object.id).first()
         context["payments"] = Invoice.objects.filter(student=self.object)
         context["booklog"] = Bookmodel.objects.filter(student=self.object)
         context["classlog"] = Classmodel.objects.filter(student=self.object)

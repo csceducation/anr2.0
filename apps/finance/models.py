@@ -4,7 +4,7 @@ from django.utils import timezone
 from apps.staffs.models import Staff
 from apps.corecode.models import AcademicSession, AcademicTerm, StudentClass
 from apps.students.models import Student
-
+import json
 
 class Invoice(models.Model):
     total_num = 0
@@ -71,3 +71,57 @@ class Receipt(models.Model):
     def __str__(self):
         return f"Receipt on {self.date_paid}"
     
+    def save(self,due,date,*args,**kwargs):
+        if due == None:
+            self.save()
+        else:
+            dues = Due.objects.get(id=due)
+            dues_list = dues.dues
+            for item in dues_list:
+                if item['date'] == date:
+                    item['status'] = "paid"
+            dues.dues = dues_list
+            dues.save()
+            super().save(*args, **kwargs)
+
+class Due(models.Model):
+    invoice = models.ForeignKey(Invoice, related_name='due_invoice', on_delete=models.DO_NOTHING)
+    total_amount = models.IntegerField()
+    dues = models.JSONField(default=list)
+
+    def extend_due(self,index,new_date,*args,**kwargs):
+        due = self.dues[index]
+        due['date'] = new_date
+
+        self.dues[index] = due
+        super().save(*args, **kwargs)
+
+
+
+from django.db import connection
+
+# Get the current date
+current_date = "2024-04-13"
+from django.db.models import Q
+import json
+
+# Fetch all Due objects
+all_dues = Due.objects.all()
+
+# List to store filtered dues
+filtered_dues = []
+
+# Iterate through each Due object
+for due in all_dues:
+    # Convert the JSON string to a Python object
+    dues_list = json.loads(due.dues)
+
+    # Iterate through each item in the dues list
+    for item in dues_list:
+        # Check if 'date' key exists in the item and if its value matches the current date
+        if 'date' in item and item['date'] == str(current_date):
+            # If it matches, add the Due object to the filtered list
+            filtered_dues.append(due)
+
+# Now filtered_dues contains Due objects where any of the JSON items has the current date
+print(filtered_dues)
