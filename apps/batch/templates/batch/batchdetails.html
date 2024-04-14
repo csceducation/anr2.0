@@ -213,8 +213,30 @@
         </div>
     </div>
 </section>
-
-
+<hr>
+<div class="container mt-3">
+  <h2>Attendance Table</h2>
+  <table class="table table-bordered table-striped-columns">
+    <thead >
+      <tr>
+        <th>Date</th>
+        <th>Total Students</th>
+        <th>Lab Presentees</th>
+        <th>Theory Presentees</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in table_data %}
+      <tr>
+        <td>{{ row.date }}</td>
+        <td>{{ row.total_students }}</td>
+        <td>{{ row.lab_presentees }}</td>
+        <td>{{ row.theory_presentees }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% comment %} 
   <div class="container mt-5">
     <h2 class="mb-4">Batch Detail</h2>

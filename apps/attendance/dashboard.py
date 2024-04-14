@@ -200,6 +200,42 @@ class DashboardManager:
         
         return create_student_data(student,lab_documents,theory_documents,batch_id)
 
+    def get_batch_summary(self, batch):
+        batch_id = batch.id
+
+        # Get all lab documents for the given batch_id and dates
+        lab_documents = self.lab_collection.find({
+            'batch_id': batch_id,
+            'students': {'$exists': True, '$ne': {}}
+        })
+
+        # Get all theory documents for the given batch_id and dates
+        theory_documents = self.theory_collection.find({
+            'batch_id': batch_id,
+            'students': {'$exists': True, '$ne': {}}
+        })
+
+        # Create dictionaries to store the total students present for each date
+        lab_students_per_date = {}
+        theory_students_per_date = {}
+
+        # Process lab documents
+        for lab_doc in lab_documents:
+            date = lab_doc.get('date')
+            students_present = sum(1 for student in lab_doc['students'].values() if student['status'] == 'present')
+            lab_students_per_date[date] = lab_students_per_date.get(date, 0) + students_present
+
+        # Process theory documents
+        for theory_doc in theory_documents:
+            date = theory_doc.get('date')
+            students_present = sum(1 for student in theory_doc['students'].values() if student['status'] == 'present')
+            theory_students_per_date[date] = theory_students_per_date.get(date, 0) + students_present
+
+        return {
+            'lab_students_per_date': lab_students_per_date,
+            'theory_students_per_date': theory_students_per_date
+        }
+        
 
 def create_student_data(student_id, lab_documents, theory_documents,batch_id):
     student_lab_data = []
@@ -235,3 +271,6 @@ def create_student_data(student_id, lab_documents, theory_documents,batch_id):
     }
 
     return data
+
+
+    

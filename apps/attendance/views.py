@@ -481,7 +481,9 @@ def extract_totals(data, target_date):
 
 
 
-def provide_batch_summary(dates,batch):
+def provide_batch_summary(batch):
     manager = DashboardManager(db)
-    data,strength = manager.get_batch_dashboard(date,batch)
-    print()
+    data = manager.get_batch_summary(batch)
+    #print(data)
+    return data
+    #return JsonResponse("success",safe=False,status=200)
