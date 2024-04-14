@@ -7,7 +7,7 @@ from datetime import datetime
 
 class DashboardManager:
     def __init__(self, mongodb_database):
-        self.client = pymongo.MongoClient('mongodb+srv://freecluster:freecluster@freecluster.oippfs7.mongodb.net/?retryWrites=true&w=majority&appName=freecluster')
+        self.client = pymongo.MongoClient('mongodb+srv://freecluster:<password>@cluster0.qnliedz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
         self.db = self.client[mongodb_database]
         self.staff_collection = self.db["staff_collection"]
         self.student_collection = self.db["student_collection"]
