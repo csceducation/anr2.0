@@ -11,7 +11,7 @@ from datetime import datetime,timedelta
 import plotly.express as px
 
 
-connection_string = "mongodb://localhost:27017/"
+connection_string = "mongodb+srv://freecluster:freecluster@freecluster.oippfs7.mongodb.net/?retryWrites=true&w=majority&appName=freecluster"
 db = "anr_attendance"
 lab_collection = "lab_collection"
 theory_collection = "theory_collection"
