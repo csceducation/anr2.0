@@ -3,11 +3,11 @@ from apps.staffs.models import Staff
 from apps.students.models import Student
 from apps.batch.models import BatchModel
 from datetime import datetime
-
+import certifi
 
 class DashboardManager:
     def __init__(self, mongodb_database):
-        self.client = pymongo.MongoClient('mongodb+srv://freecluster:<password>@cluster0.qnliedz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
+        self.client = pymongo.MongoClient('mongodb+srv://freecluster:freecluster@cluster0.qnliedz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0',tlsCAFile=certifi.where())
         self.db = self.client[mongodb_database]
         self.staff_collection = self.db["staff_collection"]
         self.student_collection = self.db["student_collection"]

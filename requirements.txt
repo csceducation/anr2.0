@@ -13,6 +13,7 @@ isort
 mccabe 
 mypy-extensions 
 pathspec 
+certifi
 Pillow 
 pycodestyle 
 pyflakes 
