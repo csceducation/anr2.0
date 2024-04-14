@@ -15,7 +15,7 @@
                 <label for="batch_input" class="mr-2">Choose a Batch:</label>
                 <select class="form-control" id="batch_input" name="batch_id" required>
                     {% for batch in batches %}
-                        <option value="{{ batch.id }}" {% if batch.id == selected_batch %} selected {% endif %}>{{ batch.batch_id }}</option>
+                        <option value="{{ batch.id }}" {% if batch.id == selected_batch %} selected {% endif %}>{{ batch.batch_id }} ({{ batch.batch_course}})</option>
                     {% endfor %}
                 </select>
             </div>

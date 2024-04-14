@@ -150,39 +150,5 @@ def bulk_invoice(request):
     return render(request, "finance/bulk_invoice.html")
 
 
-from django.http import JsonResponse
-import json
-from .models import Due
 
 
-def due_view(request, *args, **kwargs):
-    if request.method == 'POST':
-        invoice_id = kwargs.get("invoice_id")
-        invoice = Invoice.objects.filter(id=invoice_id).first()
-        dues_data = json.loads(request.POST.get('duesData'))
-
-        # Check if Due object already exists
-        due_obj, created = Due.objects.get_or_create(invoice=invoice,total_amount=invoice.total_amount_payable())
-
-        # If Due object exists, update the data
-        if not created:
-            # Clear existing dues
-            due_obj.dues.clear()
-
-        # Add new dues
-        for values in dues_data.values():
-            due_obj.dues.append(values)
-        
-        due_obj.save()
-
-        return JsonResponse({'message': 'Dues saved successfully'})
-
-    # Check if Due object exists for the invoice
-    has_previous = Due.objects.filter(invoice__id=kwargs.get('invoice_id')).exists()
-    if has_previous:
-        due = Due.objects.filter(invoice__id=kwargs.get('invoice_id')).first()
-        dues = due.dues
-        context = {"dues": dues}
-        return render(request, 'finance/due.html', context)
-    else:
-        return render(request, 'finance/due.html')

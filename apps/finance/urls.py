@@ -10,7 +10,6 @@ from .views import (
     ReceiptUpdateView,
     bulk_invoice,
     save_bill_details,
-    due_view
 )
 
 urlpatterns = [
@@ -25,5 +24,5 @@ urlpatterns = [
         "receipt/<int:pk>/update/", ReceiptUpdateView.as_view(), name="receipt-update"
     ),
     path("bulk-invoice/", bulk_invoice, name="bulk-invoice"),
-    path("create_due/<int:invoice_id>/", due_view, name="create_due"),
+    
 ]

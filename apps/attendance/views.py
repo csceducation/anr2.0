@@ -375,7 +375,7 @@ def batch_dashboard(request, *args,**kwargs):
         staffs = Staff.objects.all()
         return render(request,'not_selected.html',{'staffs':staffs})
     staff = Staff.objects.get(id=staff_id)
-    batches = BatchModel.objects.filter(batch_staff=staff)
+    batches = BatchModel.objects.filter(batch_staff=staff,)
     if selected_week:
         year, week_num = map(int, selected_week.split('-W'))
         first_day_of_week = datetime.strptime(f'{year}-W{week_num}-1', "%Y-W%W-%w")
@@ -478,3 +478,10 @@ def extract_totals(data, target_date):
         total_presentees_theory = y_values_presentees_theory[index]
 
         return total_presentees_lab,total_presentees_theory,total_strength
+
+
+
+def provide_batch_summary(dates,batch):
+    manager = DashboardManager(db)
+    data,strength = manager.get_batch_dashboard(date,batch)
+    print()

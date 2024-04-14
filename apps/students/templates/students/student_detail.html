@@ -7,7 +7,6 @@
     <a href="{% url 'booklog' object.id %}"><input type="button" class="btn btn-sm btn-primary" value="Book"></a>
     <a href="{% url 'examlog' object.id %}"><input type="button" class="btn btn-sm btn-primary" value="Exam"></a>
     <a href="{% url 'certificatelog' object.id %}"><input type="button" class="btn btn-sm btn-primary" value="Certificate"></a>
-    <a href = "{% url 'create_due' invoice_id=invoice.id %}" class="btn btn-sm btn-primary">Manage Dues</a>
     <a href="{% url 'generate_student_id_card' object.id %}" class="btn btn-tool">Print</a>
     <a href="{% url 'student-update' object.id %}" class="btn btn-tool">
       <i class="fas fa-edit"></i>

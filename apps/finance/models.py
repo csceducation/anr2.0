@@ -84,16 +84,5 @@ class Receipt(models.Model):
             dues.save()
             super().save(*args, **kwargs)
 
-class Due(models.Model):
-    invoice = models.ForeignKey(Invoice, related_name='due_invoice', on_delete=models.DO_NOTHING)
-    total_amount = models.IntegerField()
-    dues = models.JSONField(default=list)
-
-    def extend_due(self,index,new_date,*args,**kwargs):
-        due = self.dues[index]
-        due['date'] = new_date
-
-        self.dues[index] = due
-        super().save(*args, **kwargs)
 
 
