@@ -235,6 +235,68 @@ mark {
         </div>
       </div>
   </div>
+
+
+  <body>
+    <div class="container">
+      <div class="row">
+        <form id="monthForm" class="form-inline">
+          <div class="col-auto">
+            <input type="month" id="selectedMonth" class="form-control">
+          </div>
+          <div class="col-auto">
+            <button type="submit" class="btn btn-info">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  <div class="container">
+    <div>
+      <h2>Attendance Data for month - {{request.GET.month}}</h2>
+    </div>
+    <div class="table-container">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Entry</th>
+            <th>Exit</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in data %}
+          <tr>
+            <td>{{ item.date }}</td>
+            <td>{{ item.status }}</td>
+            <td>{{ item.entry }}</td>
+            <td>{{ item.exit }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <script>
+    // JavaScript function to redirect with month and year as query parameters
+    function redirectToSelectedMonth() {
+      const selectedMonth = document.getElementById("selectedMonth").value;
+      const year = selectedMonth.split("-")[0];
+      const month = selectedMonth.split("-")[1];
+
+      const urlParams = new URLSearchParams(window.location.search);
+      urlParams.set("year", year);
+      urlParams.set("month", month);
+
+      window.location.href = window.location.pathname + "?" + urlParams.toString();
+    }
+
+    // Add event listener to the form submission
+    document.getElementById("monthForm").addEventListener("submit", function(event) {
+      event.preventDefault(); // Prevent default form submission
+      redirectToSelectedMonth();
+    });
+  </script>
 </section>
 
 

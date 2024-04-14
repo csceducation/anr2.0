@@ -2,6 +2,8 @@ import pymongo
 from apps.staffs.models import Staff
 from apps.students.models import Student
 from apps.batch.models import BatchModel
+from datetime import datetime
+
 
 class DashboardManager:
     def __init__(self, mongodb_database):
@@ -236,6 +238,52 @@ class DashboardManager:
             'theory_students_per_date': theory_students_per_date
         }
         
+    def get_staff_summary(self,staff,month,year):
+        staff_id = str(staff.id)
+        start_date = datetime(year, month, 1)
+        end_date = datetime(year, month + 1, 1) if month < 12 else datetime(year + 1, 1, 1)
+        # Query for the specific month
+        query = {
+            "date": {
+                "$gte": str(start_date.date()),
+                "$lt": str(end_date.date())
+            }
+        }
+
+        # Fetch documents
+        results = self.staff_collection.find(query)
+        
+        summary = []
+        for result in results:
+            data = {}
+            data['date'] = result['date']
+            data['status'] = result.get("atttendance",{}).get(staff_id,{}).get('status',"present")
+            data["entry"] = result.get("attendance",{}).get(staff_id,{}).get("entry_time","N/A")
+            data["exit"] = result.get("attendance",{}).get(staff_id,{}).get("exit_time","N/A")
+            summary.append(data)
+        
+        return summary
+        '''
+        data = []
+        # Loop through documents and print all data
+        for result in results:
+            obj = {}
+            obj['id'] = result["_id"]
+            obj["date"] = result['date']
+            obj['attendance'] = result['attendance']
+            data.append(obj)
+            #print("Document ID:", result["_id"])
+            #print("Date:", result["date"])
+            #print("Attendance Data:")
+            #for staff_id, data in result["attendance"].items():
+            #    print("  Staff ID:", staff_id)
+            #    print("  Entry Time:", data["entry_time"])
+            #    print("  Exit Time:", data["exit_time"])
+            #    print("  Status:", data["status"].capitalize() if data["status"] else "Unknown")
+            #    print()
+            #print("-" * 50)
+        return data
+        '''
 
 def create_student_data(student_id, lab_documents, theory_documents,batch_id):
     student_lab_data = []

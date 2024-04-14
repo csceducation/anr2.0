@@ -487,3 +487,9 @@ def provide_batch_summary(batch):
     #print(data)
     return data
     #return JsonResponse("success",safe=False,status=200)
+
+def provide_staff_summary(staff,month,year):
+    manager = DashboardManager(db)
+    data = manager.get_staff_summary(staff,month,year)
+    #print(data)
+    return data

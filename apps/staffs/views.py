@@ -10,7 +10,7 @@ from .models import Staff
 from django.utils.decorators import method_decorator
 from apps.corecode.views import staff_student_entry_restricted,different_user_restricted
 from apps.corecode.models import User
-
+from apps.attendance.views import provide_staff_summary
 
 class StaffListView(ListView):
     model = Staff
@@ -19,6 +19,23 @@ class StaffListView(ListView):
 class StaffDetailView(DetailView):
     model = Staff
     template_name = "staffs/staff_detail.html"
+    def get_context_data(self, **kwargs):
+        month = int(self.request.GET.get("month",0))
+        year = int(self.request.GET.get("year",0))
+        if month and year != 0:
+            context = super().get_context_data(**kwargs)
+            obj = self.get_object()
+            context['data'] = provide_staff_summary(obj,month,year)
+            #print(context)
+            return context
+
+        
+        context = super().get_context_data(**kwargs)
+        obj = self.get_object()
+        # Your additional context data
+        #context['data'] = provide_staff_summary(obj)
+
+        return context
 
 @method_decorator(staff_student_entry_restricted(),name='dispatch')
 class StaffCreateView(SuccessMessageMixin, CreateView):
