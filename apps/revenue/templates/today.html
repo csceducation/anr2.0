@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+    /* Define the styles for the awesome heading */
+.awesome-heading {
+    font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    font-size: 24px;
+    font-weight: 500px;
+    color: #d215a6;
+    text-align: left;
+    text-transform: uppercase;
+    margin-top: 10px;
+    padding: 4px;
+    background-color: rgba(19, 18, 18, 0);
+}
+.total{
+    width: 100%;
+}
+
+</style>
+<body>
+    <h1 class="awesome-heading">Bill history for {{date}}</h1>
+    <div class="table-responsive">
+        <table id="studenttable" class="table table-bordered table-hover" data-page-length='100'>
+          <thead class="thead-light">
+            <tr>
+              <th>Date</th>
+              <th>Bill No</th>
+              <th>Registration Number</th>
+              <th>Name</th>
+              <th>Current Class</th>
+              <th>Paid</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for rec in recipt %}
+              <tr>
+                <td>{{ rec.date_paid}}</td>
+                <td>{{ rec.Bill_No}}</td>
+                <td>{{  rec.regno }}</td>
+                <td>{{ rec.name }}</td>
+                <td>{{rec.current_cls}}</td>
+                <td>{{ rec.amount_paid }}</td>
+                <td>{{rec.stats }}</td>
+
+              </tr>
+            {% endfor %}
+            <tr class="total">
+                <td>Today Income</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>{{ today_col}}</td>
+                <td></td>
+               
+            </tr>
+    
+          </tbody>
+        </table>
+      </div>
+</body>
+{% endblock %}

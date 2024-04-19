@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block content %}
+
+<div class="container mt-3">
+  <div class="col-sm-8 mx-auto">
+    <table class="table table-sm table-bordered">
+      Last Bill Details</br>
+      <tbody>
+        <tr>
+          <td>Enrolement Number</td>
+          <td>{{ last_receipt.invoice.student.enrol_no }} </td>
+          </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td>Bill Number</td>
+          <td>{{ last_receipt.Bill_No}}</td>
+        </tr>
+        <tr>
+          <td>Amount Paid</td>
+          <td>{{ last_receipt.amount_paid | intcomma}}</td>
+        </tr>
+
+      </tfoot>
+    </table>
+  </div>
+    <h2>Enter Bill Details</h2>
+    <form method="post" action="{% url 'bill' %}">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="student">Studnet:</label>
+        <input type="text" name="student" id="student" class="form-control" required list="enquiry-list"  autocomplete="off">
+        <datalist id="enquiry-list">
+            {% for enquiry in stu %}
+              <option value="{{ enquiry.student_name }}({{enquiry.enrol_no}}) {{ enquiry.id }}"></option>
+            {% endfor %}
+          </datalist>
+      </div> 
+
+      <div class="form-group">
+        <label for="bill_number">Bill Number:</label>
+        <input type="text" name="bill_number" id="bill_number" class="form-control" required>
+      </div>
+  
+      <div class="form-group">
+        <label for="bill_date">Bill Date:</label>
+        <input type="date" name="bill_date" id="bill_date" class="form-control" required>
+      </div>
+  
+      <div class="form-group">
+        <label for="amount">Amount:</label>
+        <input type="number" name="amount" id="amount" class="form-control" required>
+      </div>
+
+      <div class="form-group">
+        <label for="recived_by">Recived_by:</label>
+        <input type="number" placeholder="Enter Billing Staff ID" name="recived_by" id="recived_by" class="form-control" required>
+      </div>
+      <div class="form-group">
+        <label for="comment">Remark:</label>
+        <input type="text" name="comment" id="comment" class="form-control">
+      </div>
+  
+      <button type="submit" id="changeit" class="btn btn-primary">Save</button>
+    </form>
+  </div>
+  <script>
+    {% if messages %}
+
+    {% for message in messages %}
+    alert("{{ message }}");
+  {% endfor %}
+  {% endif %}
+    document.getElementById('changeit').addEventListener('click', function() {
+      var selectedOption = document.querySelector('#enquiry-list option[value="' + document.getElementById('student').value + '"]');
+  
+      // Check if a valid option is selected
+      if (selectedOption) {
+        var inputText = document.getElementById('student').value;
+        var match = inputText.match(/\d+$/);
+        
+        if (match) {
+        var lastNumbers = match[0];
+        document.getElementById('student').value = lastNumbers;
+        console.log(lastNumbers) 
+        } else {
+        console.log("No numbers found at the end of the text");
+        } 
+        // Allow the form submission if a valid option is selected
+        return true;
+      } else {
+        // Prevent the form submission if no valid option is selected
+        event.preventDefault();
+        alert('Please select a valid option from the list.');
+        return false;
+      }
+      // Run the code when the input value changes
+      
+    }
+    );
+  </script>
+
+{% endblock content %}
